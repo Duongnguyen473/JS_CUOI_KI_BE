@@ -6,16 +6,30 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
+    "target": "ES2024",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["src/*"],
+      "@Modules/*": ["src/modules/*"],
+      "@Common/*": ["src/common/*"],
+      "@Config/*": ["src/config/*"],
+      "@Database/*": ["src/database/*"],
+      "@Guards/*": ["src/common/guards/*"],
+      "@Decorators/*": ["src/common/decorators/*"],
+      "@Interceptors/*": ["src/common/interceptors/*"],
+      "@Filters/*": ["src/common/filters/*"],
+      "@Exceptions/*": ["src/common/exceptions/*"],
+      "@Interfaces/*": ["src/common/interfaces/*"],
+      "@Base/*": ["src/common/base/*"]
+    }
   }
 }
