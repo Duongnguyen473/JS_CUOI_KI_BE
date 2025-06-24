@@ -61,7 +61,7 @@ export class AuthService {
   }
 
   async validateUser(id: string) {
-    const user = await this.userRepository.findById(id);
+    const user = await this.userRepository.getById(id);
     if (!user) {
       throw ApiError.NotFound('User not found');
     }

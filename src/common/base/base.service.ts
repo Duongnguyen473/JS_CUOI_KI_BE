@@ -10,29 +10,29 @@ export abstract class BaseService<T extends Model> {
     this.repository = repository;
   }
 
-  async findAll(options?: any): Promise<T[]> {
-    return this.repository.findAll(options);
+  async getAll(condition?: any): Promise<T[]> {
+    return this.repository.getAll(condition);
   }
 
-  async findOne(options: any): Promise<T | null> {
-    return this.repository.findOne(options);
+  async getOne(condition: any): Promise<T | null> {
+    return this.repository.getOne(condition);
   }
 
   async findById(id: string): Promise<T | null> {
-    return this.repository.findById(id);
+    return this.repository.getById(id);
   }
 
   async create(createDto: any): Promise<T> {
     return this.repository.create(createDto);
   }
 
-  async update(id: string, updateDto: any): Promise<T | null> {
-    await this.repository.update(updateDto, { where: { id } });
+  async updateOne(id: string, updateDto: any): Promise<T | null> {
+    await this.repository.updateOne(updateDto, { where: { id } });
     return this.findById(id);
   }
 
-  async remove(id: string): Promise<boolean> {
-    const result = await this.repository.delete({ where: { id } });
+  async deleteOne(id: string): Promise<boolean> {
+    const result = await this.repository.deleteOne({ where: { id } });
     return result > 0;
   }
 }

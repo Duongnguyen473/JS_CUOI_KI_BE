@@ -23,7 +23,7 @@ export class ClassController {
   constructor(private readonly classService: ClassService) {}
   @Get()
   async findAll() {
-    return this.classService.findAll();
+    return this.classService.getAll();
   }
 
 
