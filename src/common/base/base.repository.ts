@@ -7,6 +7,8 @@ import {
   DestroyOptions,
 } from 'sequelize';
 import { Injectable } from '@nestjs/common';
+import { QueryOption } from '../pipe/query-option.interface';
+import { PageableDto } from '../dto/pageable.dto';
 
 @Injectable()
 export abstract class BaseRepository<T extends Model> {
@@ -16,37 +18,54 @@ export abstract class BaseRepository<T extends Model> {
     this.model = model;
   }
 
-  async findAll(options?: FindOptions): Promise<T[]> {
-    return this.model.findAll(options);
+  async getAll(condition?: FindOptions): Promise<T[]> {
+    return this.model.findAll(condition);
   }
 
-  async findOne(options: FindOptions): Promise<T | null> {
-    return this.model.findOne(options);
+  async getPage(condition: FindOptions, options: QueryOption): Promise<PageableDto<unknown>> {
+    const { rows: data, count } = await this.model.findAndCountAll(condition);
+    return PageableDto.create(options, count, data);
   }
 
-  async findById(id: string): Promise<T | null> {
+  async getOne(condition: FindOptions): Promise<T | null> {
+    return this.model.findOne(condition);
+  }
+
+  async getById(id: string): Promise<T | null> {
     return this.model.findByPk(id);
   }
 
-  async create(values: any, options?: CreateOptions): Promise<T> {
-    return this.model.create(values, options);
+  async create(values: any, condition?: CreateOptions): Promise<T> {
+    return this.model.create(values, condition);
   }
 
-  async update(values: any, options: UpdateOptions): Promise<[number]> {
-    return this.model.update(values, options);
+  async insertMany(values: any[], condition?: CreateOptions): Promise<T[]> {
+    return this.model.bulkCreate(values, condition);
   }
 
-  async delete(options: DestroyOptions): Promise<number> {
-    return this.model.destroy(options);
+  async updateOne(values: any, condition: UpdateOptions): Promise<[number]> {
+    return this.model.update(values, condition);
   }
 
-  async count(options?: FindOptions): Promise<number> {
-    return this.model.count(options);
+  async deleteOne(condition: DestroyOptions): Promise<number> {
+    return this.model.destroy(condition);
+  }
+
+  async deleteMany(condition: DestroyOptions): Promise<number> {
+    return this.model.destroy(condition);
+  }
+
+  async count(condition?: FindOptions): Promise<number> {
+    return this.model.count(condition);
+  }
+
+  async exists(condition: FindOptions): Promise<boolean> {
+    return await this.model.count(condition) > 0;
   }
 
   async findAndCountAll(
-    options?: FindOptions,
+    condition?: FindOptions,
   ): Promise<{ rows: T[]; count: number }> {
-    return this.model.findAndCountAll(options);
+    return this.model.findAndCountAll(condition);
   }
 }
