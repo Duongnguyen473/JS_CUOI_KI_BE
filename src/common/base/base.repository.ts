@@ -31,17 +31,17 @@ export abstract class BaseRepository<E extends BaseEntity> {
 
   async getOne(condition: FindOptions): Promise<E | null> {
     const res = await this.model.findOne(condition);
-    return res.toJSON();
+    return res?.toJSON() || null;
   }
 
   async getById(id: string): Promise<E | null> {
     const res = await this.model.findByPk(id);
-    return res.toJSON();
+    return res?.toJSON() || null;
   }
 
   async create(values: any, condition?: CreateOptions): Promise<E> {
     const res = await this.model.create(values, condition);
-    return res.toJSON();
+    return res?.toJSON() || null;
   }
 
   async insertMany(
