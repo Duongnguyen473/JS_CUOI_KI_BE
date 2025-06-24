@@ -54,9 +54,9 @@ console.log(`📄 Tạo ${kebabName}.entity.ts...`);
 fs.writeFileSync(`${basePath}/entities/${kebabName}.entity.ts`, 
 `import { Table, Column, DataType, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
 import { BaseEntity } from '@Base/base.entity';
+import { EntityTable } from '@/common/constants/entity.constant';
 @Table({
-  tableName: '${kebabName.replace(/-/g, '_')}', // snake_case for database
-  paranoid: true,
+  tableName: EntityTable.${kebabName.toUpperCase().replace(/-/g, '_')},
   indexes: []
 })
 export class ${Name} extends BaseEntity {
@@ -122,7 +122,7 @@ import { Auth } from '@Decorators/auth.decorator';
 import { Public } from '@Decorators/public.decorator';
 import { ApiError } from '@Exceptions/api-error';
 
-@Controller('${kebabNames}')
+@Controller('${kebabName}')
 export class ${Name}Controller {
   constructor(private readonly ${name}Service: ${Name}Service) {}
 
@@ -132,9 +132,7 @@ export class ${Name}Controller {
 // DTOs với kebab-case filename
 console.log(`📄 Tạo create-${kebabName}.dto.ts...`);
 fs.writeFileSync(`${basePath}/dto/create-${kebabName}.dto.ts`, 
-`import { Transform } from 'class-transformer';
-
-export class Create${Name}Dto {
+`export class Create${Name}Dto {
   
 }
 `);

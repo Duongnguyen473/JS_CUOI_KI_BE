@@ -1,10 +1,10 @@
 import { Table, Column, DataType, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
 import { BaseEntity } from '@Base/base.entity';
+import { EntityTable } from '@/common/constants/entity.constant';
 @Table({
-  tableName: 'student_profile', // snake_case for database
-  paranoid: true,
+  tableName: EntityTable.STUDENT_PROFILE,
   indexes: []
 })
 export class StudentProfile extends BaseEntity {
-  
+  user_id: string;
 }

@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
 
-export class CreateStudentProfileDto {
+export class CreateProfileDto {
   
 }

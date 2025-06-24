@@ -29,7 +29,8 @@
       "@Filters/*": ["src/common/filters/*"],
       "@Exceptions/*": ["src/common/exceptions/*"],
       "@Interfaces/*": ["src/common/interfaces/*"],
-      "@Base/*": ["src/common/base/*"]
+      "@Base/*": ["src/common/base/*"],
+      "@Constants/*": ["src/common/constants/*"]
     }
   }
 }

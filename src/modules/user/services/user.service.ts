@@ -12,49 +12,23 @@ export class UsersService extends BaseService<User> {
     super(usersRepository);
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findByEmail(email);
+  async getUserProfile(id: string) {
+    const user = await this.usersRepository.findById(id);
+    
   }
-
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const existingUser = await this.findByEmail(createUserDto.email);
-    if (existingUser) {
-      throw ApiError.Conflict('Email already exists');
-    }
-    return this.create(createUserDto);
-  }
-
-  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findById(id);
+  // Get User Profile 
+  async getTutorProfile(id: string) {
+    const user = await this.usersRepository.findById(id);
     if (!user) {
       throw ApiError.NotFound('User not found');
     }
-
-    if (updateUserDto.email && updateUserDto.email !== user.email) {
-      const existingUser = await this.findByEmail(updateUserDto.email);
-      if (existingUser) {
-        throw ApiError.Conflict('Email already exists');
-      }
-    }
-
-    const updatedUser = await this.update(id, updateUserDto);
-    if (!updatedUser) {
-      throw ApiError.InternalServerError('Failed to update user');
-    }
-
-    return updatedUser;
+    
+    return user;
   }
+  private async updateTutorProfile(id: string, updateUserDto: UpdateUserDto) {}
+  private async updateStudentProfile(id: string, updateUserDto: UpdateUserDto) {}
+  async updateUserProfile(id: string, updateUserDto: UpdateUserDto) {}
 
-  async removeUser(id: string): Promise<boolean> {
-    const user = await this.findById(id);
-    if (!user) {
-      throw ApiError.NotFound('User not found');
-    }
 
-    return this.remove(id);
-  }
 
-  async findById(id: string): Promise<User | null> {
-    return super.findById(id);
-  }
 }

@@ -1,20 +1,15 @@
-import { IsEmail, IsNotEmpty, MinLength, IsOptional } from 'class-validator';
+import { UserRoles } from '@/modules/user/common/constant';
+import { User } from '@/modules/user/entities/user.entity';
+import { PickType } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
 
-export class RegisterDto {
-  @IsNotEmpty()
-  firstName: string;
-
-  @IsNotEmpty()
-  lastName: string;
-
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @IsNotEmpty()
-  @MinLength(6)
-  password: string;
-
-  @IsOptional()
-  role?: string;
+export class RegisterDto extends PickType(User, [
+  'fullname',
+  'email',
+  'phone',
+  'password',
+  'role'
+]) {
+  @IsEnum([UserRoles.TUTOR, UserRoles.STUDENT])
+  role: UserRoles;
 }

@@ -24,7 +24,6 @@ export const databaseConfig = (
   },
   define: {
     timestamps: true,
-    paranoid: true,
     underscored: false,
   },
 });

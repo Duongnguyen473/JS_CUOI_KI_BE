@@ -1,6 +1,10 @@
 export enum UserRoles {
     ADMIN = 'ADMIN',
-    USER = 'USER',
     TUTOR = 'TUTOR',
     STUDENT = 'STUDENT'
+}
+
+export enum UserStatus {
+    ACTIVE = 'ACTIVE',
+    BLOCKED = 'BLOCKED',
 }

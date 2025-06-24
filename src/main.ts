@@ -3,12 +3,14 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { setupSwagger } from './config/swagger.config';
+import { Sequelize } from 'sequelize-typescript';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   const configService = app.get(ConfigService);
-  
+  // const sequelize = app.get(Sequelize);
+  // await sequelize.sync({ alter: true });
   // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({

@@ -1,24 +1,22 @@
 services:
-  # app:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: nestjs-app
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - NODE_ENV=production
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #   volumes:
-  #     - ./src:/app/src
-  #     - ./logs:/app/logs
-  #   networks:
-  #     - app-network
-  #   restart: unless-stopped
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: conggiasu-app
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      - postgres
+      # - redis
+    networks:
+      - app-network
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules
 
   postgres:
     image: postgres:15-alpine
@@ -28,42 +26,24 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
     restart: unless-stopped
 
-  redis:
-    image: redis:7-alpine
-    container_name: nestjs-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - app-network
-    restart: unless-stopped
-
-  # pgadmin:
-  #   image: dpage/pgadmin4
-  #   container_name: nestjs-pgadmin
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
-  #     PGADMIN_DEFAULT_PASSWORD: admin
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: nestjs-redis
   #   ports:
-  #     - "5050:80"
-  #   depends_on:
-  #     - postgres
+  #     - "${REDIS_PORT:-6379}:6379"
   #   networks:
   #     - app-network
   #   restart: unless-stopped
 
 volumes:
   postgres_data:
-  redis_data:
 
 networks:
   app-network:
