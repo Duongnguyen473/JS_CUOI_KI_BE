@@ -31,7 +31,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
-    restart: unless-stopped
+    restart: always
 
   # redis:
   #   image: redis:7-alpine
