@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BaseService } from '../../../common/base/base.service';
+import { BaseService } from '@Base/base.service';
 import { User } from '../entities/user.entity';
 import { UsersRepository } from '../repositories/user.repository';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -13,20 +13,19 @@ export class UsersService extends BaseService<User> {
   }
 
   async getUserProfile(id: string) {
-    const user = await this.usersRepository.findById(id);
+    const user = await this.usersRepository.getById(id);
     
   }
   // Get User Profile 
   async getTutorProfile(id: string) {
-    const user = await this.usersRepository.findById(id);
+    const user = await this.usersRepository.getById(id);
     if (!user) {
       throw ApiError.NotFound('User not found');
     }
     
     return user;
   }
-  private async updateTutorProfile(id: string, updateUserDto: UpdateUserDto) {}
-  private async updateStudentProfile(id: string, updateUserDto: UpdateUserDto) {}
+  
   async updateUserProfile(id: string, updateUserDto: UpdateUserDto) {}
 
 

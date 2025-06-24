@@ -18,7 +18,7 @@ export abstract class BaseEntity extends Model {
   })
   @IsUUID(4)
   @IsNotEmpty()
-  declare id?: string;
+  declare _id?: string;
 
   @CreatedAt
   @Column({

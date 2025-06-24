@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from './base.repository';
-import { Model } from 'sequelize';
+import { BaseEntity } from '../interfaces/base-entity.interface';
 
 @Injectable()
-export abstract class BaseService<T extends Model> {
+export abstract class BaseService<T extends BaseEntity> {
   protected repository: BaseRepository<T>;
 
   constructor(repository: BaseRepository<T>) {
@@ -18,7 +18,7 @@ export abstract class BaseService<T extends Model> {
     return this.repository.getOne(condition);
   }
 
-  async findById(id: string): Promise<T | null> {
+  async getById(id: string): Promise<T | null> {
     return this.repository.getById(id);
   }
 
@@ -28,7 +28,7 @@ export abstract class BaseService<T extends Model> {
 
   async updateOne(id: string, updateDto: any): Promise<T | null> {
     await this.repository.updateOne(updateDto, { where: { id } });
-    return this.findById(id);
+    return this.repository.getById(id);
   }
 
   async deleteOne(id: string): Promise<boolean> {

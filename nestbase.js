@@ -47,20 +47,36 @@ fs.mkdirSync(basePath + '/controllers', { recursive: true });
 fs.mkdirSync(basePath + '/services', { recursive: true });
 fs.mkdirSync(basePath + '/repositories', { recursive: true });
 fs.mkdirSync(basePath + '/entities', { recursive: true });
+fs.mkdirSync(basePath + '/models', { recursive: true });
 fs.mkdirSync(basePath + '/dto', { recursive: true });
 
 // Entity với kebab-case filename
 console.log(`📄 Tạo ${kebabName}.entity.ts...`);
 fs.writeFileSync(`${basePath}/entities/${kebabName}.entity.ts`, 
 `import { Table, Column, DataType, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
-import { BaseEntity } from '@Base/base.entity';
-import { EntityTable } from '@/common/constants/entity.constant';
+import { BaseEntity } from '@Common/interfaces/base-entity.interface';
+import { StrObjectId } from "@/common/constants/base.constant";
+
+export class ${Name} implements BaseEntity {
+  @StrObjectId()
+  _id: string;
+}
+`);
+
+// Model với kebab-case filename
+console.log(`📄 Tạo ${kebabName}.model.ts...`);
+fs.writeFileSync(`${basePath}/models/${kebabName}.model.ts`, 
+`import { Table, Column, DataType, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
+import { ${Name} } from "../entities/${kebabName}.entity";
+import { EntityTable } from '@Common/constants/entity.constant';
+import { StrObjectId } from "@Common/constants/base.constant";
+
 @Table({
   tableName: EntityTable.${kebabName.toUpperCase().replace(/-/g, '_')},
-  indexes: []
 })
-export class ${Name} extends BaseEntity {
-  
+export class ${Name}Model extends Model implements ${Name} {
+  @StrObjectId()
+  _id: string;
 }
 `);
 
@@ -70,11 +86,11 @@ fs.writeFileSync(`${basePath}/repositories/${kebabName}.repository.ts`,
 `import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '@Base/base.repository';
 import { ${Name} } from '../entities/${kebabName}.entity';
-
+import { ${Name}Model } from '../models/${kebabName}.model';
 @Injectable()
 export class ${Name}Repository extends BaseRepository<${Name}> {
   constructor() {
-    super(${Name});
+    super(${Name}Model);
   }
 
 }
@@ -89,7 +105,6 @@ import { ${Name} } from '../entities/${kebabName}.entity';
 import { ${Name}Repository } from '../repositories/${kebabName}.repository';
 import { Create${Name}Dto } from '../dto/create-${kebabName}.dto';
 import { Update${Name}Dto } from '../dto/update-${kebabName}.dto';
-import { ApiError } from '@Exceptions/api-error';
 
 @Injectable()
 export class ${Name}Service extends BaseService<${Name}> {
@@ -105,12 +120,6 @@ console.log(`📄 Tạo ${kebabName}.controller.ts...`);
 fs.writeFileSync(`${basePath}/controllers/${kebabName}.controller.ts`, 
 `import { 
   Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete,
   Query,
   HttpCode,
   HttpStatus
@@ -150,13 +159,13 @@ console.log(`📄 Tạo ${kebabName}.module.ts...`);
 fs.writeFileSync(`${basePath}/${kebabName}.module.ts`, 
 `import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { ${Name} } from './entities/${kebabName}.entity';
+import { ${Name}Model } from './models/${kebabName}.model';
 import { ${Name}Controller } from './controllers/${kebabName}.controller';
 import { ${Name}Service } from './services/${kebabName}.service';
 import { ${Name}Repository } from './repositories/${kebabName}.repository';
 
 @Module({
-  imports: [SequelizeModule.forFeature([${Name}])],
+  imports: [SequelizeModule.forFeature([${Name}Model])],
   controllers: [${Name}Controller],
   providers: [${Name}Service, ${Name}Repository],
   exports: [${Name}Service, ${Name}Repository],

@@ -1,28 +1,26 @@
 import {
-  Table,
   Column,
   DataType,
   ForeignKey,
   BelongsTo,
 } from 'sequelize-typescript';
-import { BaseEntity } from '@Base/base.entity';
-import { EntityTable } from '@/common/constants/entity.constant';
 import { User } from '@/modules/user/entities/user.entity';
 import { ClassMode, ClassStatus } from '../common/constant';
+import { UserModel } from '@/modules/user/models/user.model';
+import { BaseEntity } from '@/common/interfaces/base-entity.interface';
+import { StrObjectId } from '@/common/constants/base.constant';
 
-@Table({
-  tableName: EntityTable.CLASS,
-  indexes: [],
-})
-export class Class extends BaseEntity {
+export class Class implements BaseEntity {
+  @StrObjectId()
+  _id: string;
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-  @ForeignKey(() => User)
+  @ForeignKey(() => UserModel)
   tutor_id: string;
 
-  @BelongsTo(() => User, {
+  @BelongsTo(() => UserModel, {
     foreignKey: 'tutor_id',
     targetKey: 'id',
   })

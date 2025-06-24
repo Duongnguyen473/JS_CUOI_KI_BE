@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '@Modules/user/services/user.service';
 import { LoginDto } from '../dto/login.dto';
 import { RegisterDto } from '../dto/register.dto';
 import { ApiError } from '../../../common/exceptions/api-error';
@@ -11,7 +10,6 @@ import { UsersRepository } from '@/modules/user/repositories/user.repository';
 export class AuthService {
   constructor(
     private userRepository: UsersRepository,
-    // private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
 
@@ -27,15 +25,18 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    const { password, ...result } = user.toJSON();
+    const { password, ...result } = user;
     return result;
   }
 
-  async login(loginDto: LoginDto) {
-    const user = await this.userRepository.findByEmail(loginDto.email);
+  async login(loginDto: LoginDto): Promise<any> {
+    const user = (await this.userRepository.findByEmail(loginDto.email));
     if (!user) {
       throw ApiError.Unauthorized('Invalid email or password');
     }
+    console.log('loginDto.password:', loginDto.password);
+  console.log('user.password:', user);
+
 
     const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
     if (!isPasswordValid) {
@@ -43,7 +44,7 @@ export class AuthService {
     }
 
     const payload = { 
-      sub: user.id, 
+      sub: user._id, 
       fullname: user.fullname, 
       email: user.email, 
       role: user.role 
@@ -52,7 +53,7 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
       user: {
-        id: user.id,
+        id: user._id,
         email: user.email,
         fullname: user.fullname,
         role: user.role,

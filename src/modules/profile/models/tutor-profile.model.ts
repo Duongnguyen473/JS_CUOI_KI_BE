@@ -1,7 +1,8 @@
 import { StrObjectId } from '@/common/constants/base.constant';
 import { BaseEntity } from '@/common/interfaces/base-entity.interface';
+import { Model } from 'sequelize-typescript';
 
-export class TutorProfile implements BaseEntity {
+export class TutorProfileModel extends Model implements BaseEntity {
   @StrObjectId()
   _id: string;
   user_id: string;

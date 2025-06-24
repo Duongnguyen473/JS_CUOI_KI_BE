@@ -11,6 +11,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   // const sequelize = app.get(Sequelize);
   // await sequelize.sync({ alter: true });
+
   // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
