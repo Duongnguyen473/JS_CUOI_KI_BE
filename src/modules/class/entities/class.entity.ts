@@ -1,85 +1,49 @@
-import {
-  Column,
-  DataType,
-  ForeignKey,
-  BelongsTo,
-} from 'sequelize-typescript';
-import { User } from '@/modules/user/entities/user.entity';
 import { ClassMode, ClassStatus } from '../common/constant';
-import { UserModel } from '@/modules/user/models/user.model';
 import { BaseEntity } from '@/common/interfaces/base-entity.interface';
 import { StrObjectId } from '@/common/constants/base.constant';
+import { IsEnum, IsNumber, IsString, Max, Min } from 'class-validator';
+import { Is } from 'sequelize-typescript';
 
 export class Class implements BaseEntity {
   @StrObjectId()
   _id: string;
-  @Column({
-    type: DataType.UUID,
-    allowNull: false,
-  })
-  @ForeignKey(() => UserModel)
-  tutor_id: string;
+  @IsString()
+  tutor_id?: string;
 
-  @BelongsTo(() => UserModel, {
-    foreignKey: 'tutor_id',
-    targetKey: 'id',
-  })
-  tutor: User;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+  @IsString()
   title: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @IsString()
   subject: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+  @IsString()
   grade: string;
-  @Column({
-    type: DataType.ENUM(...Object.values(ClassMode)),
-    allowNull: false,
-  })
+
+  @IsEnum(ClassMode)
   mode: ClassMode;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @IsString()
   location: string;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
+
+  @IsNumber()
+  @Min(1)
+  @Max(20)
   max_student: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @IsString()
   description: string;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
+
+  @IsNumber()
+  @Min(0)
   price_min: number;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
+
+  @IsNumber()
+  @Min(0)
   price_max: number;
-  @Column({
-    type: DataType.ENUM(...Object.values(ClassStatus)),
-    allowNull: false,
-  })
+
+  @IsEnum(ClassStatus)
   status: ClassStatus;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @IsString()
   schedule: string;
 }

@@ -2,7 +2,14 @@ import { User } from '@/modules/user/entities/user.entity';
 import { ClassMode, ClassStatus } from '../common/constant';
 import { Class } from '../entities/class.entity';
 import { StrObjectId } from '@/common/constants/base.constant';
-import { BelongsTo, Column, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { UserModel } from '@/modules/user/models/user.model';
 import { EntityTable } from '@/common/constants/entity.constant';
 
@@ -13,33 +20,74 @@ import { EntityTable } from '@/common/constants/entity.constant';
 export class ClassModel extends Model implements Class {
   @StrObjectId()
   _id: string;
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
   @ForeignKey(() => UserModel)
   tutor_id: string;
+
   @BelongsTo(() => UserModel, {
     foreignKey: 'tutor_id',
     targetKey: '_id',
   })
   tutor: User;
-  @Column
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   title: string;
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   subject: string;
-  @Column
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   grade: string;
-  @Column
+  @Column({
+    type: DataType.ENUM(...Object.values(ClassMode)),
+    allowNull: false,
+  })
   mode: ClassMode;
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   location: string;
-  @Column
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
   max_student: number;
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   description: string;
-  @Column
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
   price_min: number;
-  @Column
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
   price_max: number;
-  @Column
+  @Column({
+    type: DataType.ENUM(...Object.values(ClassStatus)),
+    allowNull: false,
+    defaultValue: ClassStatus.OPEN,
+  })
   status: ClassStatus;
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   schedule: string;
 }
