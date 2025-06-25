@@ -1,14 +1,35 @@
 import { StrObjectId } from '@/common/constants/base.constant';
 import { BaseEntity } from '@/common/interfaces/base-entity.interface';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator/types/decorator/decorators';
+import { EducationLever, ExperienceYear } from '../common/constant';
 
 export class TutorProfile implements BaseEntity {
   @StrObjectId()
   _id: string;
+
+  @IsString()
   user_id: string;
-  education_lever:string;
+
+  @IsEnum(EducationLever)
+  education_lever: EducationLever;
+
+  @IsString()
   major:string;
-  experience_year:number;
-  certificate:string;
+
+  @IsEnum(ExperienceYear)
+  experience_year: ExperienceYear;
+
+  @IsOptional()
+  certificate?:string[];
+
+  @IsString()
   intro:string;
-  teaching_subject: string;
+
+  @IsString()
+  teaching_subject: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  is_verified?: boolean;
+  
 }

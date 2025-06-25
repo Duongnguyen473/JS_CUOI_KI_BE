@@ -1,7 +1,7 @@
 import { EntityTable } from "@/common/constants/entity.constant";
 import { Column, Model, Table } from "sequelize-typescript";
 import { User } from "../entities/user.entity";
-import { UserRoles } from "../common/constant";
+import { Gender, UserRoles } from "../common/constant";
 import { StrObjectId } from "@/common/constants/base.constant";
 
 @Table({
@@ -12,15 +12,27 @@ export class UserModel extends Model implements User {
     _id: string;
     @Column
     fullname: string;
-    @Column
+    @Column({
+        unique: true
+    })
     email: string;
-    @Column
+    @Column({
+        unique: true
+    })
     phone: string;
     @Column
     password: string;
+    
+    @Column
+    birthday?: Date;
     @Column
     avatar?: string;
     @Column
     role: UserRoles;
+    @Column
+    gender?: Gender;
+    @Column
+    address?: string;
+
     
 }

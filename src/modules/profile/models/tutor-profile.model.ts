@@ -1,15 +1,43 @@
 import { StrObjectId } from '@/common/constants/base.constant';
 import { BaseEntity } from '@/common/interfaces/base-entity.interface';
-import { Model } from 'sequelize-typescript';
+import { BelongsTo, Column, ForeignKey, Model } from 'sequelize-typescript';
+import { EducationLever, ExperienceYear } from '../common/constant';
+import { UserModel } from '@/modules/user/models/user.model';
 
 export class TutorProfileModel extends Model implements BaseEntity {
   @StrObjectId()
   _id: string;
+
+  @ForeignKey(() => UserModel)
   user_id: string;
-  education_lever:string;
-  major:string;
-  experience_year:number;
-  certificate:string;
-  intro:string;
+
+  @BelongsTo(() => UserModel, {
+    foreignKey: 'user_id',
+    targetKey: '_id',
+    onDelete: 'CASCADE',
+  })
+  user: UserModel;
+
+  @Column
+  education_lever: EducationLever;
+  
+  @Column
+  major: string;
+  
+  @Column
+  experience_year: ExperienceYear;
+  
+  @Column
+  certificate: string[];
+  
+  @Column
+  intro: string;
+  
+  @Column
   teaching_subject: string;
+  
+  @Column({
+    defaultValue: false,
+  })
+  is_verified?: boolean;
 }

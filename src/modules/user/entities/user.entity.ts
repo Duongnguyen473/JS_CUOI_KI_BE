@@ -1,5 +1,5 @@
-import { UserRoles } from '../common/constant';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { Gender, UserRoles } from '../common/constant';
+import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { BaseEntity } from '@Common/interfaces/base-entity.interface';
 import { StrObjectId } from '@Common/constants/base.constant';
 
@@ -22,6 +22,9 @@ export class User implements BaseEntity {
   @MinLength(8)
   password: string;
 
+  @IsDate()
+  @IsOptional()
+  birthday?: Date;
 
   @IsOptional()
   avatar?: string;
@@ -29,5 +32,11 @@ export class User implements BaseEntity {
   @IsNotEmpty()
   @IsEnum(UserRoles)
   role: UserRoles;
-  // status: UserStatus;
+
+  @IsOptional()
+  @IsEnum(Gender)
+  gender?: Gender;
+
+  @IsOptional()
+  address?: string;
 }
