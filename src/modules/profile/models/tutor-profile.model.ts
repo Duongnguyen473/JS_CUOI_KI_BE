@@ -1,6 +1,13 @@
 import { StrObjectId } from '@/common/constants/base.constant';
 import { BaseEntity } from '@/common/interfaces/base-entity.interface';
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { EducationLever, ExperienceYear } from '../common/constant';
 import { UserModel } from '@/modules/user/models/user.model';
 import { EntityTable } from '@/common/constants/entity.constant';
@@ -24,24 +31,26 @@ export class TutorProfileModel extends Model implements BaseEntity {
 
   @Column
   education_lever: EducationLever;
-  
+
   @Column
   major: string;
-  
+
   @Column
   experience_year: ExperienceYear;
-  
+
   @Column({
     type: DataType.ARRAY(DataType.STRING),
   })
   certificate: string[];
-  
+
   @Column
   intro: string;
-  
-  @Column
-  teaching_subject: string;
-  
+
+  @Column({
+    type: DataType.ARRAY(DataType.STRING),
+  })
+  teaching_subject: string[];
+
   @Column({
     defaultValue: false,
   })

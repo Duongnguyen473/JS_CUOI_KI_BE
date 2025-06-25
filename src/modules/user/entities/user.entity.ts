@@ -37,6 +37,14 @@ export class User implements BaseEntity {
   @IsEnum(Gender)
   gender?: Gender;
 
+  // 
+  @IsOptional()
+  provinceId?: string;
+  @IsOptional()
+  districtId?: string;
+  @IsOptional()
+  wardId?: string;
   @IsOptional()
   address?: string;
+
 }

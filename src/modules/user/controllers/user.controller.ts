@@ -1,25 +1,10 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  Request,
-  Put,
-} from '@nestjs/common';
+import { Controller, Get, Body, Put } from '@nestjs/common';
 import { UsersService } from '../services/user.service';
-import { Public } from '@/common/decorators/public.decorator';
 import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
 import { ReqUser } from '@/common/decorators/user.decorator';
 import { UpdateUserPasswordDto } from '../dto/update-user-password.dto';
-import { Auth } from '@/common/decorators/auth.decorator';
 import { UpdateUserAvatar } from '../dto/update-user-avatar.dto';
-
 @Controller('user')
-// @Auth('TUTOR', 'STUDENT')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Get('profile/me')
@@ -48,7 +33,10 @@ export class UsersController {
   }
 
   @Put('avatar/me')
-  async updateAvatar(@ReqUser() user, @Body() updateUserAvatar: UpdateUserAvatar) {
+  async updateAvatar(
+    @ReqUser() user,
+    @Body() updateUserAvatar: UpdateUserAvatar,
+  ) {
     return this.usersService.updateUserAvatar(user.id, updateUserAvatar.avatar);
   }
 }

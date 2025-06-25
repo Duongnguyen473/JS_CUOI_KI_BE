@@ -31,6 +31,13 @@ export class UserModel extends Model implements User {
   role: UserRoles;
   @Column
   gender?: Gender;
+
+  @Column
+  provinceId?: string;
+  @Column
+  districtId?: string;
+  @Column
+  wardId?: string;
   @Column
   address?: string;
 

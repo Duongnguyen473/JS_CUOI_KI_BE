@@ -8,17 +8,36 @@ import {
   Delete,
   Query,
   HttpCode,
-  HttpStatus
+  HttpStatus,
+  Put
 } from '@nestjs/common';
 import { ProfileService } from '../services/profile.service';
-import { CreateProfileDto } from '../dto/create-profile.dto';
-import { UpdateProfileDto } from '../dto/update-profile.dto';
-import { Auth } from '@Decorators/auth.decorator';
-import { Public } from '@Decorators/public.decorator';
-import { ApiError } from '@Exceptions/api-error';
+import { ReqUser } from '@/common/decorators/user.decorator';
+
 
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
+
+  @Get('me')
+  async getProfileMe(@ReqUser() user) {
+    return this.profileService.getMeProfile(user);
+  }
+
+  @Get('tutor/:tutor_id')
+  async getTutorProfile(@Param('tutor_id') tutorId: string) {
+    return this.profileService.getTutorProfile(tutorId);
+  }
+
+  @Get('student/:student_id')
+  async getStudentProfile(@Param('student_id') studentId: string) {
+    return this.profileService.getStudentProfile(studentId);
+  }
+
+  @Put('me')
+  async updateMeProfile(@ReqUser() user, @Body() updateProfileDto: any) {
+    return this.profileService.updateMeProfile(user, updateProfileDto);
+  }
+
 
 }

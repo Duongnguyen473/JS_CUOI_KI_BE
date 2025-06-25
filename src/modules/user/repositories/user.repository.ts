@@ -4,7 +4,7 @@ import { User } from '../entities/user.entity';
 import { UserModel } from '../models/user.model';
 
 @Injectable()
-export class UsersRepository extends BaseRepository<User> {
+export class UserRepository extends BaseRepository<User> {
   constructor() {
     super(UserModel);
   }

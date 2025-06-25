@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from '@Base/base.service';
 import { User } from '../entities/user.entity';
-import { UsersRepository } from '../repositories/user.repository';
+import { UserRepository } from '../repositories/user.repository';
 import { ApiError } from '../../../common/exceptions/api-error';
 import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
 import { UpdateUserPasswordDto } from '../dto/update-user-password.dto';
@@ -9,11 +9,11 @@ import { AuthUser } from '@/common/interfaces/auth-user.interface';
 import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService extends BaseService<User> {
-  constructor(private readonly usersRepository: UsersRepository) {
-    super(usersRepository);
+  constructor(private readonly userRepository: UserRepository) {
+    super(userRepository);
   }
   async updateUserProfile(user: AuthUser, updateUserDto: UpdateUserProfileDto) {
-    const userUpdate = await this.usersRepository.updateOne(updateUserDto, {
+    const userUpdate = await this.userRepository.updateOne(updateUserDto, {
       where: { _id: user.id },
     });
     if (!userUpdate) {
@@ -27,7 +27,7 @@ export class UsersService extends BaseService<User> {
     updateUserPasswordDto: UpdateUserPasswordDto,
   ) {
     const { old_password, new_password } = updateUserPasswordDto;
-    const user = await this.usersRepository.getOne({
+    const user = await this.userRepository.getOne({
       where: { _id: userId },
       attributes: ['_id', 'password'],
     });
@@ -39,7 +39,7 @@ export class UsersService extends BaseService<User> {
       throw ApiError.BadRequest('Old password is incorrect');
     }
     const hashedPassword = await bcrypt.hash(new_password, 10);
-    const result = await this.usersRepository.updateOne(
+    const result = await this.userRepository.updateOne(
       { password: hashedPassword },
       { where: { _id: userId } },
     );
@@ -49,7 +49,7 @@ export class UsersService extends BaseService<User> {
     return { updated: true };
   }
   async updateUserAvatar(userId: string, avatar: string) {
-    const result = await this.usersRepository.updateOne(
+    const result = await this.userRepository.updateOne(
       { avatar },
       { where: { _id: userId } },
     );
