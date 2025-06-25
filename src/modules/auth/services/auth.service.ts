@@ -1,70 +1,73 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '@Modules/user/services/user.service';
 import { LoginDto } from '../dto/login.dto';
 import { RegisterDto } from '../dto/register.dto';
 import { ApiError } from '../../../common/exceptions/api-error';
 import * as bcrypt from 'bcrypt';
-
+import { UserRepository } from '@/modules/user/repositories/user.repository';
+import { ProfileService } from '@/modules/profile/services/profile.service';
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    private userRepository: UserRepository,
+    private profileService: ProfileService,
     private jwtService: JwtService,
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const existingUser = await this.usersService.findByEmail(registerDto.email);
+    const existingUser = await this.userRepository.findByEmail(
+      registerDto.email,
+    );
     if (existingUser) {
       throw ApiError.Conflict('Email already exists');
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-    const user = await this.usersService.create({
+    const user = await this.userRepository.create({
       ...registerDto,
       password: hashedPassword,
     });
+    // create profile when create user
+    await this.profileService.createProfile(user);
 
-    const { password, ...result } = user.toJSON();
+    const { password, ...result } = user;
     return result;
   }
 
-  async login(loginDto: LoginDto) {
-    const user = await this.usersService.findByEmail(loginDto.email);
+  async login(loginDto: LoginDto): Promise<any> {
+    const user = await this.userRepository.findByEmail(loginDto.email);
     if (!user) {
       throw ApiError.Unauthorized('Invalid email or password');
     }
-
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
     if (!isPasswordValid) {
       throw ApiError.Unauthorized('Invalid email or password');
     }
 
-    if (!user.isActive) {
-      throw ApiError.Forbidden('Account is deactivated');
-    }
-
-    const payload = { 
-      sub: user.id, 
-      fullname: `${user.firstName} ${user.lastName}`, 
-      email: user.email, 
-      role: user.role 
+    const payload = {
+      sub: user._id,
+      id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      role: user.role,
     };
 
     return {
       access_token: this.jwtService.sign(payload),
       user: {
-        id: user.id,
+        id: user._id,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        fullname: user.fullname,
         role: user.role,
       },
     };
   }
 
   async validateUser(id: string) {
-    const user = await this.usersService.findById(id);
+    const user = await this.userRepository.getById(id);
     if (!user) {
       throw ApiError.NotFound('User not found');
     }

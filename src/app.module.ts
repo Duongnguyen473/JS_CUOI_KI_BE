@@ -10,6 +10,9 @@ import { appConfig } from './config/app.config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AuthGuard } from './common/guards/auth.guard';
+import { ClassModule } from './modules/class/class.module';
+import { ProfileModule } from './modules/profile/profile.module';
+import { BidModule } from './modules/bid/bid.module';
 
 @Module({
   imports: [
@@ -20,6 +23,9 @@ import { AuthGuard } from './common/guards/auth.guard';
     }),
     DatabaseModule,
     UsersModule,
+    ClassModule,
+    ProfileModule,
+    BidModule,
     AuthModule,
   ],
   controllers: [AppController],

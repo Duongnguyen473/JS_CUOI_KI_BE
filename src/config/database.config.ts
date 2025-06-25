@@ -12,19 +12,14 @@ export const databaseConfig = (
   database: configService.get<string>('DB_NAME'),
   autoLoadModels: true,
   synchronize: configService.get<boolean>('DB_SYNC', false),
+  sync: {
+    alter: true,
+  },
   logging:
     configService.get<string>('NODE_ENV') === 'development'
       ? console.log
       : false,
-  pool: {
-    max: 10,
-    min: 0,
-    acquire: 30000,
-    idle: 10000,
-  },
   define: {
     timestamps: true,
-    paranoid: true,
-    underscored: false,
   },
 });

@@ -6,10 +6,12 @@ import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '@Modules/user/user.module';
+import { ProfileModule } from '../profile/profile.module';
 
 @Module({
   imports: [
     UsersModule,
+    ProfileModule,
     PassportModule,
     JwtModule.registerAsync({
       global: true,

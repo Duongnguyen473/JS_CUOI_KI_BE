@@ -1,42 +1,50 @@
-import { Table, Column, DataType } from 'sequelize-typescript';
-import { BaseEntity } from '../../../common/base/base.entity';
-import { UserRoles } from '../common/constant';
-import { IsString } from 'class-validator'
+import { Gender, UserRoles } from '../common/constant';
+import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { BaseEntity } from '@Common/interfaces/base-entity.interface';
+import { StrObjectId } from '@Common/constants/base.constant';
 
-@Table({
-  tableName: 'users',
-  paranoid: true,
-})
-export class User extends BaseEntity {
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+export class User implements BaseEntity {
+  @StrObjectId()
+  _id: string;
+
   @IsString()
-  firstName: string;
+  @MinLength(2)
+  fullname: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  lastName: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-    unique: true,
-  })
+  @IsEmail()
   email: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+  @IsString()
+  @MinLength(10)
+  @MaxLength(11)
+  phone: string;
+
+  @MinLength(8)
   password: string;
 
-  @Column({
-    type: DataType.ENUM('ADMIN', 'USER'),
-    defaultValue: UserRoles.USER,
-  })
+  @IsDate()
+  @IsOptional()
+  birthday?: Date;
+
+  @IsOptional()
+  avatar?: string;
+
+  @IsNotEmpty()
+  @IsEnum(UserRoles)
   role: UserRoles;
+
+  @IsOptional()
+  @IsEnum(Gender)
+  gender?: Gender;
+
+  // 
+  @IsOptional()
+  provinceId?: string;
+  @IsOptional()
+  districtId?: string;
+  @IsOptional()
+  wardId?: string;
+  @IsOptional()
+  address?: string;
+
 }
