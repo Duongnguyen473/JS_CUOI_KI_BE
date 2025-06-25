@@ -22,8 +22,8 @@ export abstract class BaseRepository<E extends BaseEntity> {
   }
 
   async getPage(
-    condition: FindOptions,
-    options: QueryOption,
+    condition?: FindOptions,
+    options?: QueryOption,
   ): Promise<PageableDto<unknown>> {
     const data = await this.model.findAll({...condition, ...options});
     const count = await this.model.count(condition);
@@ -53,12 +53,20 @@ export abstract class BaseRepository<E extends BaseEntity> {
     return res.map((item) => item.toJSON());
   }
 
-  async updateOne(values: any, condition: UpdateOptions): Promise<[number]> {
-    return this.model.update(values, condition);
+  async updateOne(values: any, condition: UpdateOptions): Promise<E | null> {
+    const res = await this.model.findOne(condition);
+    if (res) {
+      await res.update(values);
+    }
+    return res.toJSON() || null;
   }
 
-  async deleteOne(condition: DestroyOptions): Promise<number> {
-    return this.model.destroy(condition);
+  async deleteOne(condition: DestroyOptions): Promise<E | null> {
+    const res = await this.model.findOne(condition);
+    if (res) {
+      await res.destroy();
+    }
+    return res.toJSON() || null;
   }
 
   async deleteMany(condition: DestroyOptions): Promise<number> {

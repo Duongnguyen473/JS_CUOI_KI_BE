@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from './base.repository';
 import { BaseEntity } from '../interfaces/base-entity.interface';
+import { FindOptions } from 'sequelize';
+import { QueryOption } from '../pipe/query-option.interface';
 
 @Injectable()
 export abstract class BaseService<T extends BaseEntity> {
@@ -17,7 +19,9 @@ export abstract class BaseService<T extends BaseEntity> {
   async getOne(condition: any): Promise<T | null> {
     return this.repository.getOne(condition);
   }
-
+  async getPage(condition?: FindOptions, options?: QueryOption) {
+    return this.repository.getPage(condition, options);
+  }
   async getById(id: string): Promise<T | null> {
     return this.repository.getById(id);
   }
@@ -27,12 +31,12 @@ export abstract class BaseService<T extends BaseEntity> {
   }
 
   async updateOne(id: string, updateDto: any): Promise<T | null> {
-    await this.repository.updateOne(updateDto, { where: { id } });
+    await this.repository.updateOne(updateDto, { where: { _id: id } });
     return this.repository.getById(id);
   }
 
-  async deleteOne(id: string): Promise<boolean> {
-    const result = await this.repository.deleteOne({ where: { id } });
-    return result > 0;
+  async deleteOne(id: string): Promise<T | null> {
+    return this.repository.deleteOne({ where: { _id: id } });
+  
   }
 }
