@@ -10,8 +10,8 @@ export abstract class BaseService<T extends BaseEntity> {
     this.repository = repository;
   }
 
-  async getAll(condition?: any): Promise<T[]> {
-    return this.repository.getAll(condition);
+  async getMany(condition?: any): Promise<T[]> {
+    return this.repository.getMany(condition);
   }
 
   async getOne(condition: any): Promise<T | null> {

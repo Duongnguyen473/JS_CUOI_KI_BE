@@ -34,10 +34,6 @@ export class AuthService {
     if (!user) {
       throw ApiError.Unauthorized('Invalid email or password');
     }
-    console.log('loginDto.password:', loginDto.password);
-  console.log('user.password:', user);
-
-
     const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
     if (!isPasswordValid) {
       throw ApiError.Unauthorized('Invalid email or password');
@@ -45,6 +41,7 @@ export class AuthService {
 
     const payload = { 
       sub: user._id, 
+      id: user._id, 
       fullname: user.fullname, 
       email: user.email, 
       role: user.role 

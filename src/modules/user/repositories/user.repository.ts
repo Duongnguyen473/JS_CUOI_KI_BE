@@ -14,6 +14,6 @@ export class UsersRepository extends BaseRepository<User> {
   }
 
   async findActiveUsers(): Promise<User[]> {
-    return this.getAll({ where: { isActive: true } });
+    return this.getMany({ where: { isActive: true } });
   }
 }

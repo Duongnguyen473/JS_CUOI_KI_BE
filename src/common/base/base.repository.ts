@@ -16,7 +16,7 @@ import { BaseEntity } from '../interfaces/base-entity.interface';
 export abstract class BaseRepository<E extends BaseEntity> {
   constructor(private readonly model: ModelCtor<Model<E>>) {}
 
-  async getAll(condition?: FindOptions): Promise<E[]> {
+  async getMany(condition?: FindOptions): Promise<E[]> {
     const res = await this.model.findAll(condition);
     return res.map((item) => item.toJSON());
   }
@@ -25,7 +25,8 @@ export abstract class BaseRepository<E extends BaseEntity> {
     condition: FindOptions,
     options: QueryOption,
   ): Promise<PageableDto<unknown>> {
-    const { rows: data, count } = await this.model.findAndCountAll(condition);
+    const data = await this.model.findAll({...condition, ...options});
+    const count = await this.model.count(condition);
     return PageableDto.create(options, count, data);
   }
 

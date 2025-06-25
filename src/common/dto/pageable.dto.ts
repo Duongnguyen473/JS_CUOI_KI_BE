@@ -13,7 +13,7 @@ export class PageableDto<T = any> {
     result: T[],
   ): PageableDto {
     const { page = 1, limit = 10 } = option;
-    const offset = option.skip ?? (page - 1) * limit;
+    const offset = option.offset ?? (page - 1) * limit;
     return { page, offset, limit, total, result };
   }
 }
