@@ -11,6 +11,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AuthGuard } from './common/guards/auth.guard';
 import { ClassModule } from './modules/class/class.module';
+import { ProfileModule } from './modules/profile/profile.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ClassModule } from './modules/class/class.module';
     DatabaseModule,
     UsersModule,
     ClassModule,
+    ProfileModule,
     AuthModule,
   ],
   controllers: [AppController],
