@@ -5,31 +5,147 @@ import { BidRepository } from '../repositories/bid.repository';
 import { CreateBidDto } from '../dto/create-bid.dto';
 import { UpdateBidDto } from '../dto/update-bid.dto';
 import { AuthUser } from '@/common/interfaces/auth-user.interface';
+import { ClassRepository } from '@/modules/class/repositories/class.repository';
+import { ApiError } from '@/common/exceptions/api-error';
+import { BidStatus } from '../common/constant';
+import { ClassModel } from '@/modules/class/models/class.model';
+import { Class } from '@/modules/class/entities/class.entity';
+import { ClassStatus } from '@/modules/class/common/constant';
+import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class BidService extends BaseService<Bid> {
-  constructor(private readonly bidRepository: BidRepository) {
+  constructor(
+    private readonly bidRepository: BidRepository,
+    private readonly classRepository: ClassRepository,
+    private readonly sequelize: Sequelize,
+  ) {
     super(bidRepository);
   }
-  
+
   async getBidsOfClass(classId: string): Promise<Bid[]> {
     return this.bidRepository.getMany({ where: { class_id: classId } });
   }
-  
-  async createBid(user: AuthUser, classId: string, createBidDto: CreateBidDto): Promise<Bid> {
+
+  async createBid(
+    user: AuthUser,
+    classId: string,
+    createBidDto: CreateBidDto,
+  ): Promise<Bid> {
+    const bidClass = await this.classRepository.getOne({
+      where: { _id: classId },
+    });
+    if (!bidClass) {
+      throw ApiError.NotFound('Class not found');
+    }
+    if (bidClass.status !== ClassStatus.OPEN) {
+      throw ApiError.BadRequest('Class is not open');
+    }
+    const existBid = await this.bidRepository.exists({
+      where: { class_id: classId, student_id: user.id },
+    });
+    if (existBid) {
+      throw ApiError.Conflict('You have already bid for this class');
+    }
     const bidData = {
       ...createBidDto,
       class_id: classId,
       student_id: user.id,
     };
+
     return this.bidRepository.create(bidData);
   }
-  async updateBid(user: AuthUser, id: string, updateBidDto: UpdateBidDto): Promise<Bid> {
-    return this.bidRepository.updateOne(updateBidDto, { where: { _id: id, student_id: user.id } });
+  async updateBid(
+    user: AuthUser,
+    id: string,
+    updateBidDto: UpdateBidDto,
+  ): Promise<Bid> {
+    const bid = await this.bidRepository.getOne({
+      where: { _id: id, student_id: user.id },
+    });
+    if (!bid) {
+      throw ApiError.NotFound('Bid not found');
+    }
+    if (bid.status !== BidStatus.PENDING) {
+      throw ApiError.BadRequest('Bid cant be updated');
+    }
+    const res = await this.bidRepository.updateOne(updateBidDto, {
+      where: { _id: id, student_id: user.id },
+    });
+    if (!res) {
+      throw ApiError.BadRequest('Update bid failed');
+    }
+    return res;
   }
   async deleteBid(user: AuthUser, id: string): Promise<Bid> {
-    return this.bidRepository.deleteOne({ where: { _id: id, student_id: user.id } });
+    const res = await this.bidRepository.deleteOne({
+      where: { _id: id, student_id: user.id },
+    });
+    if (!res) {
+      throw ApiError.BadRequest('Delete bid failed');
+    }
+    return res;
   }
-  
+  // Tutor handle
+  // tutor select student
+  async tutorSelectBidStudent(
+    tutorId: string,
+    bidId: string,
+  ): Promise<Bid | any> {
+    const bid = await this.bidRepository.getOne({
+      where: { _id: bidId },
+      include: [
+        {
+          model: ClassModel,
+          as: 'class',
+          attributes: ['_id', 'tutor_id', 'status', 'max_student'],
+        },
+      ],
+    });
+    const bidClass = bid.class as Class;
+    if (!bid) {
+      throw ApiError.NotFound('Bid not found');
+    }
+    if (bidClass.tutor_id !== tutorId) {
+      throw ApiError.BadRequest('You are not the tutor of this bid');
+    }
+    if (bidClass.status !== ClassStatus.OPEN) {
+      throw ApiError.BadRequest('Class is not open');
+    }
+    // Handle for class
+    const countAcceptBid = await this.getAllBidsAcceptOfClass(bidClass._id, BidStatus.ACCEPTED);
 
+    if (countAcceptBid + 1 >= bidClass.max_student) {
+      const transaction = await this.sequelize.transaction();
+      try {
+        await this.classRepository.updateOne(
+          { status: ClassStatus.FULL },
+          { where: { _id: bidClass._id }, transaction },
+        );
+        await transaction.commit();
+      } catch (error) {
+        await transaction.rollback();
+        throw ApiError.InternalServerError(error);
+      }
+    }
+
+    return bid;
+  }
+
+  // FUNCTION
+  private async getAllBidsAcceptOfClass(
+    classId: string,
+    status: BidStatus = null,
+  ): Promise<number> {
+    const where = {
+      class_id: classId,
+    };
+    if (status) {
+      where['status'] = status;
+    }
+    const countBid = await this.bidRepository.count({
+      where,
+    });
+    return countBid;
+  }
 }
