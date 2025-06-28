@@ -13,8 +13,9 @@ import {
 } from '@nestjs/common';
 import { ProfileService } from '../services/profile.service';
 import { ReqUser } from '@/common/decorators/user.decorator';
+import { Auth } from '@/common/decorators/auth.decorator';
 
-
+@Auth()
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}

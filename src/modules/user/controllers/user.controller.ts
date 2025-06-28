@@ -4,6 +4,8 @@ import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
 import { ReqUser } from '@/common/decorators/user.decorator';
 import { UpdateUserPasswordDto } from '../dto/update-user-password.dto';
 import { UpdateUserAvatar } from '../dto/update-user-avatar.dto';
+import { Auth } from '@/common/decorators/auth.decorator';
+@Auth()
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
