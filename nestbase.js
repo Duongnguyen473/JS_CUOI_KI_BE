@@ -53,8 +53,7 @@ fs.mkdirSync(basePath + '/dto', { recursive: true });
 // Entity với kebab-case filename
 console.log(`📄 Tạo ${kebabName}.entity.ts...`);
 fs.writeFileSync(`${basePath}/entities/${kebabName}.entity.ts`, 
-`import { Table, Column, DataType, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
-import { BaseEntity } from '@Common/interfaces/base-entity.interface';
+`import { BaseEntity } from '@Common/interfaces/base-entity.interface';
 import { StrObjectId } from "@/common/constants/base.constant";
 
 export class ${Name} implements BaseEntity {
@@ -66,7 +65,7 @@ export class ${Name} implements BaseEntity {
 // Model với kebab-case filename
 console.log(`📄 Tạo ${kebabName}.model.ts...`);
 fs.writeFileSync(`${basePath}/models/${kebabName}.model.ts`, 
-`import { Table, Column, DataType, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
+`import { Table, Model } from 'sequelize-typescript';
 import { ${Name} } from "../entities/${kebabName}.entity";
 import { EntityTable } from '@Common/constants/entity.constant';
 import { StrObjectId } from "@Common/constants/base.constant";
