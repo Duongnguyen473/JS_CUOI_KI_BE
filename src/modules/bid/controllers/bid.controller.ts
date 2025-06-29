@@ -38,7 +38,7 @@ export class BidController {
     return this.bidService.getById(bidId);
   }
   // Create bid of class
-  @Roles( UserRoles.STUDENT)
+  @Roles(UserRoles.STUDENT)
   @Post('class/:classId')
   async createBid(
     @ReqUser() user,
@@ -64,11 +64,12 @@ export class BidController {
   // Tutor handle
   // tutor select student
   @Post(':bidId/tutor/select')
-  async tutorSelectBidStudent(
-    @ReqUser() user,
-    @Param('bidId') bidId: string,
-    ) {
+  async tutorSelectBidStudent(@ReqUser() user, @Param('bidId') bidId: string) {
     return this.bidService.tutorSelectBidStudent(user.id, bidId);
   }
-
+  // Tutor reject student
+  @Post(':bidId/tutor/reject')
+  async tutorRejectBidStudent(@ReqUser() user, @Param('bidId') bidId: string) {
+    return this.bidService.tutorRejectBidStudent(user.id, bidId);
+  }
 }

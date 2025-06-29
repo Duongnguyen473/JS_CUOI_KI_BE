@@ -15,10 +15,13 @@ import { Class } from '../entities/class.entity';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRoles } from '@/modules/user/common/constant';
 import { ReqUser } from '@/common/decorators/user.decorator';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Controller('class')
 export class ClassController {
   constructor(private readonly classService: ClassService) {}
+  // API document
+  @ApiProperty()
   @Public()
   @Get()
   async findAll() {

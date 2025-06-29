@@ -113,7 +113,10 @@ export class BidService extends BaseService<Bid> {
       throw ApiError.BadRequest('Class is not open');
     }
     // Handle for class
-    const countAcceptBid = await this.getAllBidsAcceptOfClass(bidClass._id, BidStatus.ACCEPTED);
+    const countAcceptBid = await this.getAllBidsAcceptOfClass(
+      bidClass._id,
+      BidStatus.ACCEPTED,
+    );
 
     if (countAcceptBid + 1 >= bidClass.max_student) {
       const transaction = await this.sequelize.transaction();
@@ -128,8 +131,46 @@ export class BidService extends BaseService<Bid> {
         throw ApiError.InternalServerError(error);
       }
     }
-
     return bid;
+  }
+  // Tutor reject student
+  async tutorRejectBidStudent(
+    tutorId: string,
+    bidId: string,
+  ): Promise<Bid | any> {
+    const bid = await this.bidRepository.getOne({
+      where: { _id: bidId },
+      include: [
+        {
+          model: ClassModel,
+          as: 'class',
+          attributes: ['_id', 'tutor_id', 'status'],
+        },
+      ],
+    });
+    if (!bid) {
+      throw ApiError.NotFound('Bid not found');
+    }
+    const bidClass = bid.class;
+    if (bidClass.tutor_id !== tutorId) {
+      throw ApiError.Forbidden('You are not the tutor of this bid');
+    }
+    if (bid.status !== BidStatus.PENDING) {
+      throw ApiError.BadRequest('Bid cant be updated');
+    }
+    
+    const transaction = await this.sequelize.transaction();
+    try {
+      await this.bidRepository.updateOne(
+        { status: BidStatus.REJECTED },
+        { where: { _id: bidId } },
+      );
+      await transaction.commit();
+      return bid;
+    } catch (error) {
+      await transaction.rollback();
+      throw ApiError.InternalServerError(error);
+    }
   }
 
   // FUNCTION

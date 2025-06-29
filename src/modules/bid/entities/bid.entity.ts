@@ -3,13 +3,15 @@ import { StrObjectId } from "@/common/constants/base.constant";
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { BidStatus } from '../common/constant';
 import { Class } from '@/modules/class/entities/class.entity';
+import { ApiHideProperty } from '@nestjs/swagger';
 
 export class Bid implements BaseEntity {
   @StrObjectId()
   _id: string;
   @IsString()
   class_id: string;
-  class: Class;
+  @ApiHideProperty()
+  class?: Class;
   @IsString()
   student_id: string;
   @IsNumber()

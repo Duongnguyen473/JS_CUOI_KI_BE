@@ -13,6 +13,7 @@ import { AuthGuard } from './common/guards/auth.guard';
 import { ClassModule } from './modules/class/class.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { BidModule } from './modules/bid/bid.module';
+import { EnrollmentModule } from './modules/enrollment/enrollment.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { BidModule } from './modules/bid/bid.module';
     ClassModule,
     ProfileModule,
     BidModule,
+    EnrollmentModule,
     AuthModule,
   ],
   controllers: [AppController],
