@@ -4,12 +4,15 @@ import { Class } from '../entities/class.entity';
 import { ClassRepository } from '../repositories/class.repository';
 import { CreateClassDto } from '../dto/create-class.dto';
 import { AuthUser } from '@/common/interfaces/auth-user.interface';
-import { ClassStatus } from '../common/constant';
+import { ClassStatus, ManagerClass } from '../common/constant';
 import { UpdateClassDto } from '../dto/update-class.dto';
 import { BidRepository } from '@/modules/bid/repositories/bid.repository';
 import { EnrollmentRepository } from '@/modules/enrollment/repositories/enrollment.repository';
 import { ApiError } from '@/common/exceptions/api-error';
 import { Sequelize } from 'sequelize-typescript';
+import { BidStatus } from '@/modules/bid/common/constant';
+import { ClassModel } from '../models/class.model';
+import { UserRepository } from '@/modules/user/repositories/user.repository';
 
 @Injectable()
 export class ClassService extends BaseService<Class> {
@@ -18,6 +21,7 @@ export class ClassService extends BaseService<Class> {
     private readonly classRepository: ClassRepository,
     private readonly bidRepository: BidRepository,
     private readonly enrollmentRepository: EnrollmentRepository,
+    private readonly userRepositroy: UserRepository,
   ) {
     super(classRepository);
   }
@@ -107,16 +111,51 @@ export class ClassService extends BaseService<Class> {
     );
   }
   // Tutor Manager class
-  async getTutorClasses(tutorId: string): Promise<Class[]> {
+  async tutorGetManagerClass(tutorId: string): Promise<ManagerClass[]> {
     const res = await this.classRepository.getMany({
       where: { tutor_id: tutorId },
     });
-    const tutorClass = res.map((item) => {
-      return {
-        ...item,
-      };
-    });
-    // console.log(tutorClass);
+    const tutorClass = await Promise.all(
+      res.map(async (item) => {
+        const enrollmentClass = await this.enrollmentRepository.count({
+          where: { class_id: item._id },
+        });
+        const bidClass = await this.bidRepository.getMany({
+          where: { class_id: item._id },
+        });
+        const peddingBid = bidClass.reduce(
+          (total, bid) =>
+            bid.status === BidStatus.PENDING ? total + 1 : total,
+          0,
+        );
+
+        return {
+          ...item,
+          enrollment: enrollmentClass,
+          totalBid: bidClass.length,
+          peddingBid: peddingBid,
+        };
+      }),
+    );
     return tutorClass;
+  }
+  async studentGetClass(studentId: string): Promise<Class[]> {
+    const bid = await this.bidRepository.getMany({
+      where: { student_id: studentId },
+      include: [
+        {
+          model: ClassModel,
+          as: 'class',
+        }
+      ]
+    });
+    const bidClass = await Promise.all(bid.map(async (item) => {
+      const classInfo = item.class as Class;
+      const avgRating = await this.userRepositroy.getTutorAvgRating(classInfo.tutor_id);
+      
+      return item.class;
+    }));
+
+    return bidClass;
   }
 }

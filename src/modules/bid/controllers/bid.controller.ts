@@ -31,6 +31,8 @@ export class BidController {
   async getBidsOfClass(@Param('classId') classId: string) {
     return this.bidService.getBidsOfClass(classId);
   }
+
+
   // Get bid by id
   @ApiProperty()
   @Get(':bidId')
@@ -42,7 +44,7 @@ export class BidController {
   @Post('class/:classId')
   async createBid(
     @ReqUser() user,
-    @Param('id') classId: string,
+    @Param('classId') classId: string,
     @Body() createBidDto: CreateBidDto,
   ) {
     return this.bidService.createBid(user, classId, createBidDto);

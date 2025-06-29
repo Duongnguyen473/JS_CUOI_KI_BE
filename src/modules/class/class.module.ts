@@ -6,9 +6,10 @@ import { ClassRepository } from './repositories/class.repository';
 import { ClassModel } from './models/class.model';
 import { BidModule } from '../bid/bid.module';
 import { EnrollmentModule } from '../enrollment/enrollment.module';
+import { UsersModule } from '../user/user.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([ClassModel]), BidModule, EnrollmentModule],
+  imports: [SequelizeModule.forFeature([ClassModel]), BidModule, EnrollmentModule, UsersModule],
   controllers: [ClassController],
   providers: [ClassService, ClassRepository],
   exports: [ClassService, ClassRepository],

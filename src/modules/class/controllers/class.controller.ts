@@ -16,7 +16,9 @@ import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRoles } from '@/modules/user/common/constant';
 import { ReqUser } from '@/common/decorators/user.decorator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Auth } from '@/common/decorators/auth.decorator';
 
+@Auth()
 @Controller('class')
 export class ClassController {
   constructor(private readonly classService: ClassService) {}
@@ -27,6 +29,19 @@ export class ClassController {
   async findAll() {
     return this.classService.getMany();
   }
+  // Tutor Manager class
+  @Roles(UserRoles.TUTOR)
+  @Get('manager')
+  async getTutorClasses(@ReqUser() user) {
+    return this.classService.tutorGetManagerClass(user.id);
+  }
+  
+  // getClassByTutorId
+  @Get('tutor/:tutorId')
+  async getClassByTutorId(@Param('tutorId') tutorId: string) {
+    return this.classService.getMany({ where: { tutor_id: tutorId } });
+  }
+  // Chú Ý Cái Này !!!!!!
   @Get(':id')
   async getClassById(@Param('id') id: string) {
     return this.classService.getClassById(id);
@@ -60,4 +75,5 @@ export class ClassController {
   async deleteClass(@ReqUser() user, @Param('id') id: string): Promise<Class> {
     return this.classService.deleteClass(user.id, id);
   }
+  
 }

@@ -14,6 +14,7 @@ import { ClassModule } from './modules/class/class.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { BidModule } from './modules/bid/bid.module';
 import { EnrollmentModule } from './modules/enrollment/enrollment.module';
+import { ReviewModule } from './modules/review/review.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { EnrollmentModule } from './modules/enrollment/enrollment.module';
     ProfileModule,
     BidModule,
     EnrollmentModule,
+    ReviewModule,
     AuthModule,
   ],
   controllers: [AppController],

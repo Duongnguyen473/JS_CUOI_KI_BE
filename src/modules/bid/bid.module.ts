@@ -7,11 +7,13 @@ import { BidRepository } from './repositories/bid.repository';
 
 import { ClassModule } from '../class/class.module';
 import { UsersModule } from '../user/user.module';
+import { EnrollmentModule } from '../enrollment/enrollment.module';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([BidModel]),
     forwardRef(() => ClassModule),
+    forwardRef(() => EnrollmentModule),
     UsersModule,
   ],
   controllers: [BidController],

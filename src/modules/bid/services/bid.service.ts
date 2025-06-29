@@ -12,12 +12,14 @@ import { ClassModel } from '@/modules/class/models/class.model';
 import { Class } from '@/modules/class/entities/class.entity';
 import { ClassStatus } from '@/modules/class/common/constant';
 import { Sequelize } from 'sequelize-typescript';
+import { EnrollmentRepository } from '@/modules/enrollment/repositories/enrollment.repository';
 
 @Injectable()
 export class BidService extends BaseService<Bid> {
   constructor(
     private readonly bidRepository: BidRepository,
     private readonly classRepository: ClassRepository,
+    private readonly enrollmentRepository: EnrollmentRepository,
     private readonly sequelize: Sequelize,
   ) {
     super(bidRepository);
@@ -91,7 +93,7 @@ export class BidService extends BaseService<Bid> {
   async tutorSelectBidStudent(
     tutorId: string,
     bidId: string,
-  ): Promise<Bid | any> {
+  ): Promise<any> {
     const bid = await this.bidRepository.getOne({
       where: { _id: bidId },
       include: [
@@ -118,20 +120,37 @@ export class BidService extends BaseService<Bid> {
       BidStatus.ACCEPTED,
     );
 
-    if (countAcceptBid + 1 >= bidClass.max_student) {
-      const transaction = await this.sequelize.transaction();
-      try {
+    const transaction = await this.sequelize.transaction();
+    try {
+      const newBid = await this.bidRepository.updateOne(
+        { status: BidStatus.ACCEPTED },
+        { where: { _id: bidId }, transaction },
+      );
+      if (!newBid) {
+        throw ApiError.BadRequest('Update bid failed');
+      }
+      await this.enrollmentRepository.create(
+        {
+          class_id: bidClass._id,
+          student_id: bid.student_id,
+          bid_id: bidId,
+        },
+        {
+          transaction,
+        },
+      );
+      if (countAcceptBid + 1 >= bidClass.max_student) {
         await this.classRepository.updateOne(
           { status: ClassStatus.FULL },
           { where: { _id: bidClass._id }, transaction },
         );
-        await transaction.commit();
-      } catch (error) {
-        await transaction.rollback();
-        throw ApiError.InternalServerError(error);
       }
+      await transaction.commit();
+      return newBid;
+    } catch (error) {
+      await transaction.rollback();
+      throw ApiError.InternalServerError(error);
     }
-    return bid;
   }
   // Tutor reject student
   async tutorRejectBidStudent(
@@ -158,7 +177,7 @@ export class BidService extends BaseService<Bid> {
     if (bid.status !== BidStatus.PENDING) {
       throw ApiError.BadRequest('Bid cant be updated');
     }
-    
+
     const transaction = await this.sequelize.transaction();
     try {
       await this.bidRepository.updateOne(
@@ -172,6 +191,7 @@ export class BidService extends BaseService<Bid> {
       throw ApiError.InternalServerError(error);
     }
   }
+  // Tutor get manager bid of class
 
   // FUNCTION
   private async getAllBidsAcceptOfClass(
@@ -188,5 +208,18 @@ export class BidService extends BaseService<Bid> {
       where,
     });
     return countBid;
+  }
+
+  async rejectAllPenddingBidOfClass(classId: string): Promise<void> {
+    const bidClass = await this.classRepository.exists({
+      where: { _id: classId },
+    });
+    if (!bidClass) {
+      throw ApiError.NotFound('Class not found');
+    }
+    await this.bidRepository.updateMany(
+      { status: BidStatus.REJECTED },
+      { where: { class_id: classId } },
+    );
   }
 }
