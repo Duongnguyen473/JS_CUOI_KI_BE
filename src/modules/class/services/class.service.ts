@@ -13,6 +13,9 @@ import { Sequelize } from 'sequelize-typescript';
 import { BidStatus } from '@/modules/bid/common/constant';
 import { ClassModel } from '../models/class.model';
 import { UserRepository } from '@/modules/user/repositories/user.repository';
+import { UserModel } from '@/modules/user/models/user.model';
+import { Enrollment } from '@/modules/enrollment/entities/enrollment.entity';
+import { EnrollmentStatus } from '@/modules/enrollment/common/constant';
 
 @Injectable()
 export class ClassService extends BaseService<Class> {
@@ -139,22 +142,68 @@ export class ClassService extends BaseService<Class> {
     );
     return tutorClass;
   }
-  async studentGetClass(studentId: string): Promise<Class[]> {
+  async studentGetClass(studentId: string): Promise<Class[] | any> {
     const bid = await this.bidRepository.getMany({
       where: { student_id: studentId },
+      attributes: ['_id', 'class_id', 'status', 'bid_price'],
       include: [
         {
           model: ClassModel,
           as: 'class',
-        }
-      ]
+          attributes: [
+            '_id',
+            'tutor_id',
+            'title',
+            'subject',
+            'mode',
+            'location',
+            'status',
+          ],
+          include: [
+            {
+              model: UserModel,
+              as: 'tutor',
+              attributes: ['_id', 'fullname', 'avatar'],
+            },
+          ],
+        },
+      ],
     });
-    const bidClass = await Promise.all(bid.map(async (item) => {
-      const classInfo = item.class as Class;
-      const avgRating = await this.userRepositroy.getTutorAvgRating(classInfo.tutor_id);
-      
-      return item.class;
-    }));
+    const bidClass = await Promise.all(
+      bid.map(async (bid) => {
+        const classInfo = bid.class as Class;
+        const avgRating = await this.userRepositroy.getTutorAvgRating(
+          classInfo.tutor_id,
+        );
+        classInfo.tutor['avgRating'] = avgRating;
+        let enrollment: Enrollment;
+        if (bid.status === BidStatus.ACCEPTED) {
+          enrollment = await this.enrollmentRepository.getOne({
+            where: { class_id: classInfo._id },
+            attributes: ['status'],
+          });
+          if (enrollment.status === EnrollmentStatus.STUDYING) {
+            const tutorInfo = await this.userRepositroy.getInfo(
+              classInfo.tutor_id,
+            );
+            classInfo.tutor = {
+              ...classInfo.tutor,
+              ...tutorInfo,
+            };
+          } else {
+            // self talk
+            // Xác nhận học xong có thể đánh giá
+            // Có thể không cần check cứ cho nhấn vào và review rồi thì xem lại không thì review
+          }
+        }
+        return {
+          ...bid,
+          classStatus: enrollment?.status || bid.status,
+          //Đang học, Đã học xong, Đã chào giá, Bị từ chối.
+          //STUDYING, COMPLETE, PENDING, REJECT
+        };
+      }),
+    );
 
     return bidClass;
   }

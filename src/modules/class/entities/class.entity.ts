@@ -3,13 +3,14 @@ import { BaseEntity } from '@/common/interfaces/base-entity.interface';
 import { StrObjectId } from '@/common/constants/base.constant';
 import { IsEnum, IsNumber, IsString, Max, Min } from 'class-validator';
 import { Is } from 'sequelize-typescript';
+import { User } from '@/modules/user/entities/user.entity';
 
 export class Class implements BaseEntity {
   @StrObjectId()
   _id: string;
   @IsString()
   tutor_id?: string;
-
+  tutor?: User;
   @IsString()
   title: string;
 
@@ -40,9 +41,9 @@ export class Class implements BaseEntity {
   @IsNumber()
   @Min(0)
   price_max: number;
-
+  
   @IsEnum(ClassStatus)
-  status: ClassStatus;
+  status?: ClassStatus;
 
   @IsString()
   schedule: string;

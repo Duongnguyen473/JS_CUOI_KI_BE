@@ -31,11 +31,16 @@ export class ClassController {
   }
   // Tutor Manager class
   @Roles(UserRoles.TUTOR)
-  @Get('manager')
+  @Get('tutor/manager')
   async getTutorClasses(@ReqUser() user) {
     return this.classService.tutorGetManagerClass(user.id);
   }
-  
+  @Roles(UserRoles.STUDENT)
+  @Get('student/manager')
+  async getStudentClasses(@ReqUser() user) {
+    return this.classService.studentGetClass(user.id);
+  }
+  // Student')
   // getClassByTutorId
   @Get('tutor/:tutorId')
   async getClassByTutorId(@Param('tutorId') tutorId: string) {
