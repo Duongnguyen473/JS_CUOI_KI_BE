@@ -22,11 +22,29 @@ export abstract class BaseRepository<E extends BaseEntity> {
   }
 
   async getPage(
-    condition?: FindOptions,
-    options?: QueryOption,
+    condition: FindOptions = {},
+    options: QueryOption = {},
   ): Promise<PageableDto<unknown>> {
-    const data = await this.model.findAll({ ...condition, ...options });
+    const {
+      page = 1,
+      limit = 10,
+      offset = (page - 1) * limit,
+      order,
+    } = options;
+
+    const queryOptions: FindOptions = {
+      ...condition,
+      limit,
+      offset,
+    };
+
+    if (order) {
+      queryOptions.order = order;
+    }
+
+    const data = await this.model.findAll(queryOptions);
     const count = await this.model.count(condition);
+
     return PageableDto.create(options, count, data);
   }
 
