@@ -3,6 +3,7 @@ import { BaseRepository } from './base.repository';
 import { BaseEntity } from '../interfaces/base-entity.interface';
 import { FindOptions } from 'sequelize';
 import { QueryOption } from '../pipe/query-option.interface';
+import { PageableDto } from '../dto/pageable.dto';
 
 @Injectable()
 export abstract class BaseService<T extends BaseEntity> {
@@ -19,7 +20,7 @@ export abstract class BaseService<T extends BaseEntity> {
   async getOne(condition: any): Promise<T | null> {
     return this.repository.getOne(condition);
   }
-  async getPage(condition?: FindOptions, options?: QueryOption) {
+  async getPage(condition?: FindOptions, options?: QueryOption): Promise<PageableDto<T>> {
     return this.repository.getPage(condition, options);
   }
   async getById(id: string): Promise<T | null> {

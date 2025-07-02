@@ -2,7 +2,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { QueryOption } from '../pipe/query-option.interface';
 import { parseOrder } from '../utils/parse-order.util';
 
-export const QueryOptionDecorator = createParamDecorator(
+export const RequestQuery = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): QueryOption => {
     const request = ctx.switchToHttp().getRequest();
     const query = request.query;

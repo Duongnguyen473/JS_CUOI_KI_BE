@@ -24,7 +24,7 @@ export abstract class BaseRepository<E extends BaseEntity> {
   async getPage(
     condition: FindOptions = {},
     options: QueryOption = {},
-  ): Promise<PageableDto<unknown>> {
+  ): Promise<PageableDto<E>> {
     const {
       page = 1,
       limit = 10,
