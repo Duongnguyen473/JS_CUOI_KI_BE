@@ -9,7 +9,7 @@ import { StudentProfile } from '@/modules/profile/entities/stutent-profile.entit
 import e from 'express';
 import { StudentProfileRepository } from '@/modules/profile/repositories/student-profile.repository';
 import { ClassRepository } from '@/modules/class/repositories/class.repository';
-import { TutorManagerEnrollment } from '../common/constant';
+import { EnrollmentStatus, TutorManagerEnrollment } from '../common/constant';
 
 @Injectable()
 export class EnrollmentService extends BaseService<Enrollment> {
@@ -52,7 +52,7 @@ export class EnrollmentService extends BaseService<Enrollment> {
       enrollment.map(async (item) => {
         const studentProfile = await this.studentProfileRepository.getOne({
           where: { user_id: item.student._id },
-          attributes: ['school', 'grade']
+          attributes: ['school', 'grade'],
         });
 
         return {
@@ -60,6 +60,26 @@ export class EnrollmentService extends BaseService<Enrollment> {
           student_profile: studentProfile,
         };
       }),
+    );
+    return res;
+  }
+  async studentCompleteClass(
+    studentId: string,
+    classId: string,
+  ): Promise<Enrollment> {
+    const enrollment = await this.enrollmentRepository.getOne({
+      where: { student_id: studentId, class_id: classId },
+      attributes: ['status'],
+    });
+    if (!enrollment) {
+      throw ApiError.NotFound('Enrollment not found');
+    }
+    const completedAt = new Date();
+    const res = await this.enrollmentRepository.updateOne(
+      { status: EnrollmentStatus.COMPLETED, completed_at: completedAt },
+      {
+        where: { student_id: studentId, class_id: classId },
+      },
     );
     return res;
   }
