@@ -10,6 +10,8 @@ import { EntityTable } from '@Common/constants/entity.constant';
 import { StrObjectId } from '@Common/constants/base.constant';
 import { User } from '@/modules/user/entities/user.entity';
 import { UserModel } from '@/modules/user/models/user.model';
+import { ClassMode } from '@/modules/class/common/constant';
+import { ClassModel } from '@/modules/class/models/class.model';
 
 @Table({
   tableName: EntityTable.REVIEW,
@@ -27,9 +29,9 @@ export class ReviewModel extends Model implements Review {
   })
   reviewer?: User;
   @Column
-  @ForeignKey(() => UserModel)
+  @ForeignKey(() => ClassModel)
   class_id: string;
-  @BelongsTo(() => UserModel, {
+  @BelongsTo(() => ClassModel, {
     foreignKey: 'class_id',
     targetKey: '_id',
     onDelete: 'CASCADE',

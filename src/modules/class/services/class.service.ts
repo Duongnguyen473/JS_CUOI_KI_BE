@@ -29,7 +29,7 @@ export class ClassService extends BaseService<Class> {
     super(classRepository);
   }
   // Student get class
-  async getAllClass(): Promise<Class[]> {
+  async getClass(): Promise<Class[]> {
     return this.classRepository.getMany();
   }
 

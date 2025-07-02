@@ -3,12 +3,16 @@ import { ReviewService } from '../services/review.service';
 import { ReqUser } from '@/common/decorators/user.decorator';
 import { CreateReviewDto } from '../dto/create-review.dto';
 import { ApiProperty, ApiQuery } from '@nestjs/swagger';
+import { Auth } from '@/common/decorators/auth.decorator';
+import { Public } from '@/common/decorators/public.decorator';
 
+@Auth()
 @Controller('review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
-   @ApiQuery({ name: 'studentId', required: false, type: String })
+  @Public()
+  @ApiQuery({ name: 'studentId', required: false, type: String })
   @Get('class/:classId')
   async getReviewsOfClass(
     @Param('classId') classId: string,

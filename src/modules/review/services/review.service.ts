@@ -23,23 +23,18 @@ export class ReviewService extends BaseService<Review> {
     classId: string,
     studentId?: string,
   ): Promise<Review[]> {
-    const reviewClass = await this.classRepository.exists({
-      where: { _id: classId },
-    });
-    if (!reviewClass) {
-      throw ApiError.NotFound('Class not found');
-    }
     const where: any = { class_id: classId };
     if (studentId) {
       where.reviewer_id = studentId;
     }
     const review = await this.reviewRepository.getMany({
       where,
+      attributes: ['rating', 'comment', 'createdAt'],
       include: [
         {
           model: UserModel,
           as: 'reviewer',
-          attributes: ['_id', 'fullname', 'avatar'],
+          attributes: ['fullname', 'avatar'],
         },
       ],
     });
@@ -63,7 +58,7 @@ export class ReviewService extends BaseService<Review> {
     }
     
     const review = await this.reviewRepository.exists({
-      where: { enrollment_id: enrollment._id, student_id: user.id },
+      where: { enrollment_id: enrollment._id, reviewer_id: user.id },
     });
     if (review) {
       throw ApiError.Conflict('You have already review for this class');
