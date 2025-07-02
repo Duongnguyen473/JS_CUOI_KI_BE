@@ -19,15 +19,22 @@ export class ReviewService extends BaseService<Review> {
   ) {
     super(reviewRepository);
   }
-  async getReviewsOfClass(classId: string): Promise<Review[]> {
+  async getReviewsOfClass(
+    classId: string,
+    studentId?: string,
+  ): Promise<Review[]> {
     const reviewClass = await this.classRepository.exists({
       where: { _id: classId },
     });
     if (!reviewClass) {
       throw ApiError.NotFound('Class not found');
     }
+    const where: any = { class_id: classId };
+    if (studentId) {
+      where.reviewer_id = studentId;
+    }
     const review = await this.reviewRepository.getMany({
-      where: { class_id: classId },
+      where,
       include: [
         {
           model: UserModel,
