@@ -17,6 +17,8 @@ import { UserRoles } from '@/modules/user/common/constant';
 import { ReqUser } from '@/common/decorators/user.decorator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Auth } from '@/common/decorators/auth.decorator';
+import { RequestQuery } from '@/common/decorators/request-query.decorator';
+import { QueryOption } from '@/common/pipe/query-option.interface';
 
 @Auth()
 @Controller('class')
@@ -26,8 +28,10 @@ export class ClassController {
   @ApiProperty()
   @Public()
   @Get()
-  async findAll() {
-    return this.classService.getMany();
+  async findAll(
+    @RequestQuery() query: QueryOption, 
+  ) {
+    return this.classService.getPage({}, query);
   }
   // Tutor Manager class
   @Roles(UserRoles.TUTOR)
