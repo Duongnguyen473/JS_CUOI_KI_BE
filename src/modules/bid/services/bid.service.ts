@@ -57,8 +57,19 @@ export class BidService extends BaseService<Bid> {
       class_id: classId,
       student_id: user.id,
     };
-
-    return this.bidRepository.create(bidData);
+    const res = await this.bidRepository.create(bidData);
+    if (!res) {
+      throw ApiError.BadRequest('Create bid failed');
+    }
+    // send notification to tutor
+    await this.notificationService.createNotification({
+      user_id: bidClass.tutor_id,
+      type: NotificationType.COURSE,
+      title: `Học viên - ${user.fullname} đã chào giá cho lớp - ${bidClass.title}`,
+      content: `Học viên - ${user.fullname} đã chào giá cho lớp - ${bidClass.title} với giá là ${res.bid_price} VNĐ
+      Hãy vào lớp học để xem chi tiết nhé.`,
+    }); 
+    return res;
   }
   async updateBid(
     user: AuthUser,
