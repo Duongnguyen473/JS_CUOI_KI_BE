@@ -8,6 +8,7 @@ import { ClassModule } from '../class/class.module';
 import { EnrollmentModule } from '../enrollment/enrollment.module';
 import { UsersModule } from '../user/user.module';
 import { ProfileModule } from '../profile/profile.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ProfileModule } from '../profile/profile.module';
     EnrollmentModule,
     UsersModule,
     ProfileModule,
+    NotificationModule,
     forwardRef(() => ClassModule),
   ],
   controllers: [ReviewController],

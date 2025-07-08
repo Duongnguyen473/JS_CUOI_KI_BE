@@ -10,6 +10,8 @@ import { AuthUser } from '@/common/interfaces/auth-user.interface';
 import { CreateReviewDto } from '../dto/create-review.dto';
 import { EnrollmentStatus } from '@/modules/enrollment/common/constant';
 import { ClassModel } from '@/modules/class/models/class.model';
+import { NotificationType } from '@/modules/notification/common/constant';
+import { NotificationService } from '@/modules/notification/services/notification.service';
 
 @Injectable()
 export class ReviewService extends BaseService<Review> {
@@ -17,6 +19,7 @@ export class ReviewService extends BaseService<Review> {
     private readonly reviewRepository: ReviewRepository,
     private readonly enrollmentRepository: EnrollmentRepository,
     private readonly classRepository: ClassRepository,
+    private readonly notificationService: NotificationService,
   ) {
     super(reviewRepository);
   }
@@ -54,7 +57,7 @@ export class ReviewService extends BaseService<Review> {
         {
           model: ClassModel,
           as: 'class',
-          attributes: ['tutor_id'],
+          attributes: ['tutor_id', 'title'],
         }
       ]
 
@@ -80,6 +83,19 @@ export class ReviewService extends BaseService<Review> {
       enrollment_id: enrollment._id,
       reviewer_id: user.id,
     };
-    return this.reviewRepository.create(reviewData);
+    const res = await this.reviewRepository.create(reviewData);
+    if (!res) {
+      throw ApiError.BadRequest('Create review failed');
+    }
+    // send notification to tutor
+    await this.notificationService.createNotification({
+      user_id: enrollment.class.tutor_id,
+      type: NotificationType.COURSE,
+      title: `Học viên - ${user.fullname} đã đánh giá lớp - ${enrollment.class.title}`,
+      content: `Học viên - ${user.fullname} đã đánh giá lớp - ${enrollment.class.title}. 
+      Bạn có thể vào lớp học để xem đánh giá của học viên.`,
+    });
+
+    return res;
   }
 }
