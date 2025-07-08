@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Put,
-  Req,
 } from '@nestjs/common';
 import { ClassService } from '../services/class.service';
 import { Public } from '@Decorators/public.decorator';
@@ -15,7 +14,7 @@ import { Class } from '../entities/class.entity';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRoles } from '@/modules/user/common/constant';
 import { ReqUser } from '@/common/decorators/user.decorator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiOperation, ApiProperty } from '@nestjs/swagger';
 import { Auth } from '@/common/decorators/auth.decorator';
 import { RequestQuery } from '@/common/decorators/request-query.decorator';
 import { QueryOption } from '@/common/pipe/query-option.interface';
@@ -28,17 +27,17 @@ export class ClassController {
   @ApiProperty()
   @Public()
   @Get()
-  async findAll(
-    @RequestQuery() query: QueryOption, 
-  ) {
+  async findAll(@RequestQuery() query: QueryOption) {
     return this.classService.getPage({}, query);
   }
   // Tutor Manager class
+  @ApiOperation({ summary: 'Lấy các lớp học của gia sư' })
   @Roles(UserRoles.TUTOR)
   @Get('tutor/manager')
   async getTutorClasses(@ReqUser() user) {
     return this.classService.tutorGetManagerClass(user.id);
   }
+  @ApiOperation({ summary: 'Lấy các lớp học của học viên' })
   @Roles(UserRoles.STUDENT)
   @Get('student/manager')
   async getStudentClasses(@ReqUser() user) {
@@ -46,16 +45,20 @@ export class ClassController {
   }
   // Student')
   // getClassByTutorId
+  @ApiOperation({ summary: 'Lấy các lớp học của gia sư theo ID' })
+  @Public()
   @Get('tutor/:tutorId')
   async getClassByTutorId(@Param('tutorId') tutorId: string) {
     return this.classService.getMany({ where: { tutor_id: tutorId } });
   }
   // Chú Ý Cái Này !!!!!!
+  @ApiOperation({ summary: 'Lấy thông tin lớp học theo ID' })
+  @Public()
   @Get(':id')
   async getClassById(@Param('id') id: string) {
     return this.classService.getClassById(id);
   }
-
+  @ApiOperation({ summary: 'Gia sư mớ lớp học mới' })
   @Roles(UserRoles.TUTOR)
   @Post()
   async createClass(
@@ -64,6 +67,7 @@ export class ClassController {
   ): Promise<Class> {
     return this.classService.createClass(user, classData);
   }
+  @ApiOperation({ summary: 'Gia sư cập nhật thông tin lớp học' })
   @Roles(UserRoles.TUTOR)
   @Put(':id')
   async updateClass(
@@ -73,16 +77,17 @@ export class ClassController {
   ): Promise<Class> {
     return this.classService.updateClass(user.id, id, classData);
   }
+  @ApiOperation({ summary: 'Gia sư đóng lớp học' })
   @Roles(UserRoles.TUTOR)
-  @Put(':id/close')
+  @Post(':id/close')
   async closeClass(@ReqUser() user, @Param('id') id: string): Promise<Class> {
     return this.classService.closeClass(user.id, id);
   }
 
+  @ApiOperation({ summary: 'Gia sư xoá lớp học' })
   @Roles(UserRoles.TUTOR)
   @Delete(':id')
   async deleteClass(@ReqUser() user, @Param('id') id: string): Promise<Class> {
     return this.classService.deleteClass(user.id, id);
   }
-  
 }
