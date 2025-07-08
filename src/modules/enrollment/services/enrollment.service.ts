@@ -10,6 +10,7 @@ import e from 'express';
 import { StudentProfileRepository } from '@/modules/profile/repositories/student-profile.repository';
 import { ClassRepository } from '@/modules/class/repositories/class.repository';
 import { EnrollmentStatus, TutorManagerEnrollment } from '../common/constant';
+import { UserRepository } from '@/modules/user/repositories/user.repository';
 
 @Injectable()
 export class EnrollmentService extends BaseService<Enrollment> {
@@ -17,6 +18,7 @@ export class EnrollmentService extends BaseService<Enrollment> {
     private readonly enrollmentRepository: EnrollmentRepository,
     private readonly studentProfileRepository: StudentProfileRepository,
     private readonly classRepository: ClassRepository,
+    private readonly userRepository: UserRepository,
   ) {
     super(enrollmentRepository);
   }
@@ -36,7 +38,7 @@ export class EnrollmentService extends BaseService<Enrollment> {
         {
           model: UserModel,
           as: 'student',
-          attributes: ['_id', 'fullname', 'email', 'phone', 'avatar'],
+          attributes: ['_id', 'fullname', 'avatar'],
         },
         {
           model: BidModel,
@@ -50,14 +52,23 @@ export class EnrollmentService extends BaseService<Enrollment> {
     }
     const res = await Promise.all(
       enrollment.map(async (item) => {
+        let student = item.student as UserModel;
         const studentProfile = await this.studentProfileRepository.getOne({
           where: { user_id: item.student._id },
           attributes: ['school', 'grade'],
         });
+        let studentInfo: Pick<UserModel, 'phone' | 'email'>
+        if (item.status === EnrollmentStatus.STUDYING) {
+          studentInfo = await this.userRepository.getInfo(item.student._id);
+        }
+        item.student = {
+          ...student,
+          ...studentInfo,
+          ...studentProfile
+        }
 
         return {
           ...item,
-          student_profile: studentProfile,
         };
       }),
     );

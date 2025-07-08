@@ -7,5 +7,5 @@ export enum EnrollmentStatus {
 }
 
 export interface TutorManagerEnrollment extends Enrollment {
-  student_profile: StudentProfile;
+  // student_profile: StudentProfile;
 }
