@@ -6,11 +6,13 @@ import { ApiError } from '../../../common/exceptions/api-error';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '@/modules/user/repositories/user.repository';
 import { ProfileService } from '@/modules/profile/services/profile.service';
+import { WalletService } from '@/modules/wallet/services/wallet.service';
 @Injectable()
 export class AuthService {
   constructor(
     private userRepository: UserRepository,
     private profileService: ProfileService,
+    private walletService: WalletService,
     private jwtService: JwtService,
   ) {}
 
@@ -29,7 +31,7 @@ export class AuthService {
     });
     // create profile when create user
     await this.profileService.createProfile(user);
-
+    await this.walletService.createWallet(user._id);
     const { password, ...result } = user;
     return result;
   }

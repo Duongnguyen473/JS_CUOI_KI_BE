@@ -7,11 +7,13 @@ import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '@Modules/user/user.module';
 import { ProfileModule } from '../profile/profile.module';
+import { WalletModule } from '../wallet/wallet.module';
 
 @Module({
   imports: [
     UsersModule,
     ProfileModule,
+    WalletModule,
     PassportModule,
     JwtModule.registerAsync({
       global: true,
