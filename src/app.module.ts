@@ -15,6 +15,7 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { BidModule } from './modules/bid/bid.module';
 import { EnrollmentModule } from './modules/enrollment/enrollment.module';
 import { ReviewModule } from './modules/review/review.module';
+import { WalletModule } from './modules/wallet/wallet.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ReviewModule } from './modules/review/review.module';
     BidModule,
     EnrollmentModule,
     ReviewModule,
+    WalletModule,
     AuthModule,
   ],
   controllers: [AppController],
@@ -47,6 +49,6 @@ import { ReviewModule } from './modules/review/review.module';
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
- ],
+  ],
 })
 export class AppModule {}
