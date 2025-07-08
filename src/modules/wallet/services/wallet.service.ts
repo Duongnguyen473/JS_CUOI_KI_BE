@@ -7,7 +7,6 @@ import { ApiError } from '@/common/exceptions/api-error';
 import { Op } from 'sequelize';
 import { PageableDto } from '@/common/dto/pageable.dto';
 import { QueryOption } from '@/common/pipe/query-option.interface';
-import { WalletTransactionRepository } from '../repositories/wallet-transaction.repository';
 import { WalletTransaction } from '../entities/wallet-transaction.entity';
 import { WalletTransactionService } from './wallet-transaction.service';
 import {

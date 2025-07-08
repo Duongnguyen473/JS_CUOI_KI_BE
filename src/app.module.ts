@@ -17,6 +17,7 @@ import { EnrollmentModule } from './modules/enrollment/enrollment.module';
 import { ReviewModule } from './modules/review/review.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { DepositPackageModule } from './modules/deposit-package/deposit-package.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     ReviewModule,
     WalletModule,
     NotificationModule,
+    DepositPackageModule,
     AuthModule,
   ],
   controllers: [AppController],
