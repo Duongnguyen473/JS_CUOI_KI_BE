@@ -9,14 +9,28 @@ import { WalletTransactionRepository } from './repositories/wallet-transaction.r
 import { WalletTransactionModel } from './models/wallet-transaction.model';
 import { WalletTransactionService } from './services/wallet-transaction.service';
 import { PayosService } from './services/payos.service';
+import { DepositPackage } from '../deposit-package/entities/deposit-package.entity';
+import { DepositPackageModule } from '../deposit-package/deposit-package.module';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([WalletModel, WalletTransactionModel]),
     UsersModule,
+    DepositPackageModule,
   ],
   controllers: [WalletController],
-  providers: [WalletService, WalletTransactionService, PayosService , WalletRepository, WalletTransactionRepository],
-  exports: [WalletService, WalletTransactionService, WalletRepository, WalletTransactionRepository],
+  providers: [
+    WalletService,
+    WalletTransactionService,
+    PayosService,
+    WalletRepository,
+    WalletTransactionRepository,
+  ],
+  exports: [
+    WalletService,
+    WalletTransactionService,
+    WalletRepository,
+    WalletTransactionRepository,
+  ],
 })
 export class WalletModule {}

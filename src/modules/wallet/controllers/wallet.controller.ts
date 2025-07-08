@@ -48,7 +48,7 @@ export class WalletController {
   @ApiOperation({ summary: 'Tạo thanh toán nạp ví' })
   @ApiProperty({ description: 'Tạo thanh toán nạp ví' })
   @Post('deposit/:packageId')
-  async deposit(@ReqUser() user, @Param('packageId') packageId: number) {
+  async deposit(@ReqUser() user, @Param('packageId') packageId: string) {
     return this.walletService.deposit(user.id, packageId);
   }
 }

@@ -19,6 +19,8 @@ import {
 import { PayosService } from './payos.service';
 import { Sequelize } from 'sequelize-typescript';
 import { PayosPaymentInfo } from '../common/interface';
+import { DepositPackageRepository } from '@/modules/deposit-package/repositories/deposit-package.repository';
+import { DepositPackage } from '@/modules/deposit-package/entities/deposit-package.entity';
 
 @Injectable()
 export class WalletService extends BaseService<Wallet> {
@@ -26,6 +28,7 @@ export class WalletService extends BaseService<Wallet> {
     private readonly walletRepository: WalletRepository,
     private readonly walletTransactionService: WalletTransactionService,
     private readonly userRepository: UserRepository,
+    private readonly depositPackageRepository: DepositPackageRepository,
     private readonly payosService: PayosService,
     private readonly sequelize: Sequelize,
   ) {
@@ -83,15 +86,16 @@ export class WalletService extends BaseService<Wallet> {
     return walletTransaction;
   }
   // user deposit money
-  async deposit(userId: string, packageId: number): Promise<WalletTransaction> {
-    if (!this.isValidDepositAmount(packageId)) {
-      throw ApiError.BadRequest('Amount must be greater than 0');
+  async deposit(userId: string, packageId: string): Promise<WalletTransaction> {
+    const depositPackage = await this.getInfoPackage(packageId);
+    if (!depositPackage) {
+      throw ApiError.NotFound('Deposit package not found');
     }
     const lastPendingTransaction = await this.getLastPendingTransaction(userId);
     if (lastPendingTransaction) {
       throw ApiError.Conflict('You already have a pending deposit transaction');
     }
-    const { amount, promotion } = this.getInfoPackage(packageId);
+    const { amount, promotion } = depositPackage
     const wallet = await this.walletRepository.getOne({
       where: { user_id: userId },
       attributes: ['_id'],
@@ -212,10 +216,10 @@ export class WalletService extends BaseService<Wallet> {
     }
   }
   // FUNCTION
-  private isValidDepositAmount(packageId: number): boolean {
-    return DEPOSIT_PACKAGE[packageId] !== undefined;
-  }
-  private getInfoPackage(packageId: number): any {
-    return DEPOSIT_PACKAGE[packageId];
+  private async getInfoPackage(packageId: string): Promise<DepositPackage> {
+    return this.depositPackageRepository.getOne({
+      where: { _id: packageId },
+      attributes: ['amount', 'promotion'],
+    });
   }
 }
