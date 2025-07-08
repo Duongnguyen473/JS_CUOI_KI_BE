@@ -1,8 +1,8 @@
-import { NotificationType } from "../common/constant";
-
-export class CreateNotificationDto extends Notification {
-  user_id: string;
-  type: NotificationType;
-  title: string;
-  content: string;
-}
+import { PickType } from '@nestjs/swagger';
+import { Notification as NotificationEntity } from '../entities/notification.entity';
+export class CreateNotificationDto extends PickType(NotificationEntity, [
+  'user_id',
+  'type',
+  'title',
+  'content',
+]) {}
