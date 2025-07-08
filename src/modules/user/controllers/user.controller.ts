@@ -5,10 +5,12 @@ import { ReqUser } from '@/common/decorators/user.decorator';
 import { UpdateUserPasswordDto } from '../dto/update-user-password.dto';
 import { UpdateUserAvatar } from '../dto/update-user-avatar.dto';
 import { Auth } from '@/common/decorators/auth.decorator';
+import { ApiOperation } from '@nestjs/swagger';
 @Auth()
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+  @ApiOperation({ summary: 'Lấy thông tin của tôi' })
   @Get('profile/me')
   async getProfileMe(@ReqUser() user) {
     console.log('Full user object:', user);
@@ -17,7 +19,7 @@ export class UsersController {
       attributes: ['_id', 'fullname', 'email', 'phone', 'role', 'avatar'],
     });
   }
-
+  @ApiOperation({ summary: 'Cập nhật thông tin của tôi' })
   @Put('profile/me')
   async updateUserProfile(
     @ReqUser() user,
@@ -26,6 +28,7 @@ export class UsersController {
     return this.usersService.updateUserProfile(user, updateUserProfileDto);
   }
 
+  @ApiOperation({ summary: 'Cập nhật mật khẩu của tôi' })
   @Put('password/me')
   async updatePassword(
     @ReqUser() user,
@@ -34,6 +37,7 @@ export class UsersController {
     return this.usersService.updatePassword(user.id, updateUserPasswordDto);
   }
 
+  @ApiOperation({ summary: 'Cập nhật avatar của tôi' })
   @Put('avatar/me')
   async updateAvatar(
     @ReqUser() user,

@@ -24,7 +24,7 @@ import { QueryOption } from '@/common/pipe/query-option.interface';
 export class ClassController {
   constructor(private readonly classService: ClassService) {}
   // API document
-  @ApiProperty()
+  @ApiOperation({ summary: 'Lấy các lớp học' })
   @Public()
   @Get()
   async findAll(@RequestQuery() query: QueryOption) {
