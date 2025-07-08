@@ -8,6 +8,7 @@ import { BidRepository } from './repositories/bid.repository';
 import { ClassModule } from '../class/class.module';
 import { UsersModule } from '../user/user.module';
 import { EnrollmentModule } from '../enrollment/enrollment.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { EnrollmentModule } from '../enrollment/enrollment.module';
     forwardRef(() => ClassModule),
     forwardRef(() => EnrollmentModule),
     UsersModule,
+    NotificationModule,
   ],
   controllers: [BidController],
   providers: [BidService, BidRepository],

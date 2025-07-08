@@ -13,6 +13,8 @@ import { Class } from '@/modules/class/entities/class.entity';
 import { ClassStatus } from '@/modules/class/common/constant';
 import { Sequelize } from 'sequelize-typescript';
 import { EnrollmentRepository } from '@/modules/enrollment/repositories/enrollment.repository';
+import { NotificationService } from '@/modules/notification/services/notification.service';
+import { NotificationType } from '@/modules/notification/common/constant';
 
 @Injectable()
 export class BidService extends BaseService<Bid> {
@@ -20,6 +22,7 @@ export class BidService extends BaseService<Bid> {
     private readonly bidRepository: BidRepository,
     private readonly classRepository: ClassRepository,
     private readonly enrollmentRepository: EnrollmentRepository,
+    private readonly notificationService: NotificationService,
     private readonly sequelize: Sequelize,
   ) {
     super(bidRepository);
@@ -100,7 +103,7 @@ export class BidService extends BaseService<Bid> {
         {
           model: ClassModel,
           as: 'class',
-          attributes: ['_id', 'tutor_id', 'status', 'max_student'],
+          attributes: ['_id', 'title' ,'tutor_id', 'status', 'max_student'],
         },
       ],
     });
@@ -145,6 +148,14 @@ export class BidService extends BaseService<Bid> {
           { where: { _id: bidClass._id }, transaction },
         );
       }
+      // send notification to student
+      await this.notificationService.createNotification({
+        user_id: bid.student_id,
+        type: NotificationType.COURSE,
+        title: `Chào giá của bạn ở lớp - ${bidClass.title} đã được chấp nhận`,
+        content: `Bạn đã được chấp nhận vào lớp học - ${bidClass.title} với giá là ${newBid.bid_price} VNĐ
+        Hãy vào lớp học để nhận thông tin liên hệ với gia sư nhé.`,
+      });
       await transaction.commit();
       return newBid;
     } catch (error) {
@@ -184,6 +195,14 @@ export class BidService extends BaseService<Bid> {
         { status: BidStatus.REJECTED },
         { where: { _id: bidId } },
       );
+      // send notification to student
+      await this.notificationService.createNotification({
+        user_id: bid.student_id,
+        type: NotificationType.COURSE,
+        title: `Chào giá của bạn ở lớp - ${bidClass.title} đã bị từ chối`,
+        content: `Bạn đã bị từ chối ở lớp học - ${bidClass.title} 
+        Hãy vào lớp học để xem lý do từ chối nhé.`,
+      });
       await transaction.commit();
       return bid;
     } catch (error) {
