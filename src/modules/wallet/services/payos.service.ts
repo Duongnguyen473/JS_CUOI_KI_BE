@@ -16,9 +16,9 @@ export class PayosService {
 
   async createPayment(amount: number) {
     const orderCode = Number(
-      `${Date.now()}${Math.floor(Math.random() * 9000)
+      `${Date.now()}${Math.floor(Math.random() * 900)
         .toString()
-        .padStart(4, '0')}`,
+        .padStart(3, '0')}`,
     );
     const cancelUrl = `${process.env.APP_URL}/payment/cancel`;
     const returnUrl = `${process.env.APP_URL}/payment/success`;
