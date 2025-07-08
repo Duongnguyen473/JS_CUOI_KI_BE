@@ -16,6 +16,7 @@ import { BidModule } from './modules/bid/bid.module';
 import { EnrollmentModule } from './modules/enrollment/enrollment.module';
 import { ReviewModule } from './modules/review/review.module';
 import { WalletModule } from './modules/wallet/wallet.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { WalletModule } from './modules/wallet/wallet.module';
     EnrollmentModule,
     ReviewModule,
     WalletModule,
+    NotificationModule,
     AuthModule,
   ],
   controllers: [AppController],
