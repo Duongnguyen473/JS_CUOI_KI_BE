@@ -18,6 +18,10 @@ import { ClassModel } from '@/modules/class/models/class.model';
 })
 export class ReviewModel extends Model implements Review {
   @Column
+  @ForeignKey(() => UserModel)
+  reviewee_id: string;
+  reviewee?: User;
+  @Column
   enrollment_id: string;
   @Column
   @ForeignKey(() => UserModel)

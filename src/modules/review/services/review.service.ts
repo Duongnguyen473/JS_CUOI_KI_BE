@@ -9,6 +9,7 @@ import { UserModel } from '@/modules/user/models/user.model';
 import { AuthUser } from '@/common/interfaces/auth-user.interface';
 import { CreateReviewDto } from '../dto/create-review.dto';
 import { EnrollmentStatus } from '@/modules/enrollment/common/constant';
+import { ClassModel } from '@/modules/class/models/class.model';
 
 @Injectable()
 export class ReviewService extends BaseService<Review> {
@@ -48,7 +49,15 @@ export class ReviewService extends BaseService<Review> {
   ): Promise<Review> {
     const enrollment = await this.enrollmentRepository.getOne({
       where: { class_id: classId, student_id: user.id },
-      attributes: ['_id', 'status'],
+      attributes: ['_id', 'status',],
+      include: [
+        {
+          model: ClassModel,
+          as: 'class',
+          attributes: ['tutor_id'],
+        }
+      ]
+
     });
     if (!enrollment) {
       throw ApiError.NotFound('Enrollment not found');
@@ -66,6 +75,7 @@ export class ReviewService extends BaseService<Review> {
 
     const reviewData = {
       ...createReviewDto,
+      reviewee_id: enrollment.class.tutor_id,
       class_id: classId,
       enrollment_id: enrollment._id,
       reviewer_id: user.id,

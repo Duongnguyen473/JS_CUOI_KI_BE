@@ -3,6 +3,7 @@ import { StrObjectId } from "@/common/constants/base.constant";
 import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 import { User } from '@/modules/user/entities/user.entity';
 import { ApiHideProperty } from '@nestjs/swagger';
+import { Is } from 'sequelize-typescript';
 
 export class Review implements BaseEntity {
   @StrObjectId()
@@ -13,6 +14,10 @@ export class Review implements BaseEntity {
   reviewer_id: string;
   @ApiHideProperty()
   reviewer?: User;
+  @IsString()
+  reviewee_id: string;
+  @ApiHideProperty()
+  reviewee?: User;
   @IsString()
   class_id: string;
   @IsNumber()
