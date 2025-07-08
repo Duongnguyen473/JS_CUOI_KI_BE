@@ -7,12 +7,14 @@ import { EnrollmentRepository } from './repositories/enrollment.repository';
 import { ProfileModule } from '../profile/profile.module';
 import { ClassModule } from '../class/class.module';
 import { UsersModule } from '../user/user.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([EnrollmentModel]),
     ProfileModule,
     UsersModule,
+    NotificationModule,
     forwardRef(() => ClassModule),
   ],
   controllers: [EnrollmentController],

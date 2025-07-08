@@ -5,12 +5,13 @@ import { EnrollmentRepository } from '../repositories/enrollment.repository';
 import { ApiError } from '@/common/exceptions/api-error';
 import { UserModel } from '@/modules/user/models/user.model';
 import { BidModel } from '@/modules/bid/models/bid.model';
-import { StudentProfile } from '@/modules/profile/entities/stutent-profile.entity';
-import e from 'express';
 import { StudentProfileRepository } from '@/modules/profile/repositories/student-profile.repository';
 import { ClassRepository } from '@/modules/class/repositories/class.repository';
 import { EnrollmentStatus, TutorManagerEnrollment } from '../common/constant';
 import { UserRepository } from '@/modules/user/repositories/user.repository';
+import { ClassModel } from '@/modules/class/models/class.model';
+import { NotificationService } from '@/modules/notification/services/notification.service';
+import { NotificationType } from '@/modules/notification/common/constant';
 
 @Injectable()
 export class EnrollmentService extends BaseService<Enrollment> {
@@ -19,6 +20,7 @@ export class EnrollmentService extends BaseService<Enrollment> {
     private readonly studentProfileRepository: StudentProfileRepository,
     private readonly classRepository: ClassRepository,
     private readonly userRepository: UserRepository,
+    private readonly notificationService: NotificationService,
   ) {
     super(enrollmentRepository);
   }
@@ -80,6 +82,18 @@ export class EnrollmentService extends BaseService<Enrollment> {
   ): Promise<Enrollment> {
     const enrollment = await this.enrollmentRepository.getOne({
       where: { student_id: studentId, class_id: classId },
+      include: [
+        {
+          model: ClassModel,
+          as: 'class',
+          attributes: ['title', 'tutor_id'],
+        },
+        {
+          model: UserModel,
+          as: 'student',
+          attributes: ['fullname'],
+        }
+      ],
       attributes: ['status'],
     });
     if (!enrollment) {
@@ -92,6 +106,14 @@ export class EnrollmentService extends BaseService<Enrollment> {
         where: { student_id: studentId, class_id: classId },
       },
     );
+    // send notification to tutor
+    await this.notificationService.createNotification({
+      user_id: enrollment.class.tutor_id,
+      type: NotificationType.COURSE,
+      title: `Học viên - ${enrollment.student.fullname} đã hoàn thành lớp - ${enrollment.class.title}`,
+      content: `Học viên - ${enrollment.student.fullname} đã hoàn thành lớp - ${enrollment.class.title}. 
+      Bạn có thể vào lớp học để xem đánh giá của học viên.`,
+    });
     return res;
   }
 }
