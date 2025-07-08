@@ -14,8 +14,6 @@ export class UserRepository extends BaseRepository<User> {
   constructor(
     @InjectModel(ReviewModel)
     private readonly reviewModel: typeof ReviewModel,
-    @InjectModel(ClassModel)
-    private readonly classModel: typeof ClassModel,
   ) {
     super(UserModel);
   }
@@ -35,20 +33,14 @@ export class UserRepository extends BaseRepository<User> {
     if (!tutor || tutor.role !== UserRoles.TUTOR) {
       throw ApiError.NotFound('Tutor not found');
     }
-    const tutorClass = await this.classModel.findAll({
-      where: { tutor_id: tutorId },
-      attributes: ['_id'],
-    });
     // get all comment from list tutor class _id use sequelize $in
     const review = await this.reviewModel.findAll({
       where: {
-        class_id: {
-          [Op.in]: tutorClass.map((item) => item._id),
-        },
+        reviewee_id: tutorId,
       },
       attributes: ['rating'],
     });
-    const totalRating = review.reduce((total, item) => total + item.rating, 0);
+    const totalRating = review.reduce((total, item) => total + item.toJSON().rating, 0);
     const avgRating = totalRating > 0 ? totalRating / review.length : 0;
     // console.log(review);
     // console.log(totalRating);
