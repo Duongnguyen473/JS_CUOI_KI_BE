@@ -42,7 +42,7 @@ export abstract class BaseRepository<E extends BaseEntity> {
       queryOptions.order = order;
     }
     const { where } = condition;
-    const data = await this.model.findAll(queryOptions);
+    const data = await this.getMany(queryOptions);
     const count = await this.model.count({ where });
 
     return PageableDto.create(options, count, data);
