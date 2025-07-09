@@ -18,6 +18,8 @@ import { ApiOperation, ApiProperty } from '@nestjs/swagger';
 import { Auth } from '@/common/decorators/auth.decorator';
 import { RequestQuery } from '@/common/decorators/request-query.decorator';
 import { QueryOption } from '@/common/pipe/query-option.interface';
+import { RequestCondition } from '@/common/decorators/request-condition.decotator';
+import { ConditionClassDto } from '../dto/condition-class.dto';
 
 @Auth()
 @Controller('class')
@@ -27,8 +29,11 @@ export class ClassController {
   @ApiOperation({ summary: 'Lấy các lớp học' })
   @Public()
   @Get()
-  async findAll(@RequestQuery() query: QueryOption) {
-    return this.classService.getPage({}, query);
+  async findAll(
+    @RequestCondition(ConditionClassDto) condition,
+    @RequestQuery() query: QueryOption,
+  ) {
+    return this.classService.getPage({where: condition}, query);
   }
   // Tutor Manager class
   @ApiOperation({ summary: 'Lấy các lớp học của gia sư' })
