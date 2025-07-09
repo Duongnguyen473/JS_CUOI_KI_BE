@@ -12,6 +12,7 @@ import { UpdateStudentProfileDto } from '../dto/update-student-profile.dto';
 import { User } from '@/modules/user/entities/user.entity';
 import { TutorProfile } from '../entities/tutor-profile.entity';
 import { StudentProfile } from '../entities/stutent-profile.entity';
+import { UserModel } from '@/modules/user/models/user.model';
 
 @Injectable()
 export class ProfileService {
@@ -96,5 +97,6 @@ export class ProfileService {
       user_id: userId,
     });
   }
-
+  // Tutor Profile In Class
+  
 }

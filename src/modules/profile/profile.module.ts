@@ -10,6 +10,6 @@ import { StudentProfileModel } from './models/stutent-profile.model';
   imports: [SequelizeModule.forFeature([TutorProfileModel, StudentProfileModel])],
   controllers: [ProfileController],
   providers: [ProfileService, TutorProfileRepository, StudentProfileRepository],
-  exports: [ProfileService],
+  exports: [ProfileService, TutorProfileRepository, StudentProfileRepository],
 })
 export class ProfileModule {}

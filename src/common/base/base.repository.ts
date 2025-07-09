@@ -22,11 +22,29 @@ export abstract class BaseRepository<E extends BaseEntity> {
   }
 
   async getPage(
-    condition?: FindOptions,
-    options?: QueryOption,
-  ): Promise<PageableDto<unknown>> {
-    const data = await this.model.findAll({...condition, ...options});
-    const count = await this.model.count(condition);
+    condition: FindOptions = {},
+    options: QueryOption = {},
+  ): Promise<PageableDto<E>> {
+    const {
+      page = 1,
+      limit = 10,
+      offset = (page - 1) * limit,
+      order,
+    } = options;
+
+    const queryOptions: FindOptions = {
+      ...condition,
+      limit,
+      offset,
+    };
+
+    if (order) {
+      queryOptions.order = order;
+    }
+    const { where } = condition;
+    const data = await this.model.findAll(queryOptions);
+    const count = await this.model.count({ where });
+
     return PageableDto.create(options, count, data);
   }
 
@@ -60,7 +78,10 @@ export abstract class BaseRepository<E extends BaseEntity> {
     }
     return res.toJSON() || null;
   }
-
+  async updateMany(values: any, condition: UpdateOptions): Promise<any> {
+    const res = await this.model.update(values, condition);
+    return { n: res.length };
+  }
   async deleteOne(condition: DestroyOptions): Promise<E | null> {
     const res = await this.model.findOne(condition);
     if (res) {

@@ -21,7 +21,7 @@ export class ClassModel extends Model implements Class {
   @StrObjectId()
   _id: string;
   @Column({
-    type: DataType.UUID,
+    type: DataType.STRING,
     allowNull: false,
   })
   @ForeignKey(() => UserModel)

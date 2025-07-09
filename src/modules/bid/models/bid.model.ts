@@ -1,4 +1,4 @@
-import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { BelongsTo, Column, ForeignKey, Model, Table } from 'sequelize-typescript';
 import { Bid } from '../entities/bid.entity';
 import { EntityTable } from '@Common/constants/entity.constant';
 import { StrObjectId } from '@Common/constants/base.constant';
@@ -10,8 +10,15 @@ import { UserModel } from '@/modules/user/models/user.model';
   tableName: EntityTable.BID,
 })
 export class BidModel extends Model implements Bid {
+  @Column
   @ForeignKey(() => ClassModel)
   class_id: string;
+  @BelongsTo(() => ClassModel, {
+    foreignKey: 'class_id',
+    targetKey: '_id',
+  })
+  class: ClassModel;
+  @Column
   @ForeignKey(() => UserModel)
   student_id: string;
   @Column
@@ -20,7 +27,9 @@ export class BidModel extends Model implements Bid {
   message: string;
   @Column
   address: string;
-  @Column
+  @Column({
+    defaultValue: BidStatus.PENDING,
+  })
   status: BidStatus;
   @StrObjectId()
   _id: string;

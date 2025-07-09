@@ -2,6 +2,7 @@ import { StrObjectId } from '@/common/constants/base.constant';
 import { BaseEntity } from '@/common/interfaces/base-entity.interface';
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { EducationLever, ExperienceYear } from '../common/constant';
+import { User } from '@/modules/user/entities/user.entity';
 
 export class TutorProfile implements BaseEntity {
   @StrObjectId()
@@ -10,6 +11,8 @@ export class TutorProfile implements BaseEntity {
   @IsString()
   user_id: string;
 
+  user?: User;
+  
   @IsEnum(EducationLever)
   education_lever?: EducationLever;
 

@@ -12,5 +12,6 @@ export const EntityTable = {
   SERVICE_ORDER: 'service_order',
   REVIEW: 'review',
   BID: 'bid',
-  ENROLLMENT: 'enrollment'
+  ENROLLMENT: 'enrollment',
+  DEPOSIT_PACKAGE: 'deposit_package',
 } as const;

@@ -5,4 +5,5 @@ export class CreateBidDto extends OmitType(Bid, [
   '_id',
   'class_id',
   'student_id',
+  'status',
 ]) {}
