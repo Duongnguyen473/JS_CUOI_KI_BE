@@ -16,6 +16,8 @@ import { UserRepository } from '@/modules/user/repositories/user.repository';
 import { UserModel } from '@/modules/user/models/user.model';
 import { Enrollment } from '@/modules/enrollment/entities/enrollment.entity';
 import { EnrollmentStatus } from '@/modules/enrollment/common/constant';
+import { QueryOption } from '@/common/pipe/query-option.interface';
+import { PageableDto } from '@/common/dto/pageable.dto';
 
 @Injectable()
 export class ClassService extends BaseService<Class> {
@@ -29,8 +31,34 @@ export class ClassService extends BaseService<Class> {
     super(classRepository);
   }
   // Student get class
-  async getClass(): Promise<Class[]> {
-    return this.classRepository.getMany();
+  async getClass(
+    condition: any,
+    query: QueryOption,
+  ): Promise<PageableDto<Class>> {
+    const classList = await this.classRepository.getPage(
+      {
+        where: condition,
+        include: [
+          {
+            model: UserModel,
+            as: 'tutor',
+            attributes: ['_id', 'fullname'],
+          },
+        ],
+      },
+      query,
+    );
+    classList.result = await Promise.all(
+      classList.result.map(async (item) => {
+        item.tutor['tutorReview'] = await this.userRepositroy.getTutorReview(
+          item.tutor._id,
+        );
+        return {
+          ...item,
+        };
+      }),
+    );
+    return classList;
   }
 
   async getClassById(id: string): Promise<Class> {
@@ -172,10 +200,8 @@ export class ClassService extends BaseService<Class> {
     const bidClass = await Promise.all(
       bid.map(async (bid) => {
         const classInfo = bid.class as Class;
-        const avgRating = await this.userRepositroy.getTutorAvgRating(
-          classInfo.tutor_id,
-        );
-        classInfo.tutor['avgRating'] = avgRating;
+        classInfo.tutor['tutorReview'] =
+          await this.userRepositroy.getTutorReview(classInfo.tutor_id);
         let enrollment: Enrollment;
         if (bid.status === BidStatus.ACCEPTED) {
           enrollment = await this.enrollmentRepository.getOne({

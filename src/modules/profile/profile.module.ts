@@ -6,8 +6,12 @@ import { StudentProfileRepository } from './repositories/student-profile.reposit
 import { TutorProfileRepository } from './repositories/tutor-profile.repository';
 import { TutorProfileModel } from './models/tutor-profile.model';
 import { StudentProfileModel } from './models/stutent-profile.model';
+import { UsersModule } from '../user/user.module';
 @Module({
-  imports: [SequelizeModule.forFeature([TutorProfileModel, StudentProfileModel])],
+  imports: [
+    SequelizeModule.forFeature([TutorProfileModel, StudentProfileModel]),
+    UsersModule,
+  ],
   controllers: [ProfileController],
   providers: [ProfileService, TutorProfileRepository, StudentProfileRepository],
   exports: [ProfileService, TutorProfileRepository, StudentProfileRepository],

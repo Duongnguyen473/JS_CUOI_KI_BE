@@ -33,7 +33,7 @@ export class ClassController {
     @RequestCondition(ConditionClassDto) condition,
     @RequestQuery() query: QueryOption,
   ) {
-    return this.classService.getPage({where: condition}, query);
+    return this.classService.getClass(condition, query);
   }
   // Tutor Manager class
   @ApiOperation({ summary: 'Lấy các lớp học của gia sư' })

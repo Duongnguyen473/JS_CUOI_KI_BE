@@ -13,12 +13,14 @@ import { User } from '@/modules/user/entities/user.entity';
 import { TutorProfile } from '../entities/tutor-profile.entity';
 import { StudentProfile } from '../entities/stutent-profile.entity';
 import { UserModel } from '@/modules/user/models/user.model';
+import { UserRepository } from '@/modules/user/repositories/user.repository';
 
 @Injectable()
 export class ProfileService {
   constructor(
     private readonly tutorProfileRepository: TutorProfileRepository,
     private readonly studentProfileRepository: StudentProfileRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async getMeProfile(user: AuthUser): Promise<unknown> {
@@ -35,6 +37,7 @@ export class ProfileService {
     if (!profile) {
       throw ApiError.NotFound('Profile not found');
     }
+    profile['tutorReview'] = await this.userRepository.getTutorReview(userId); 
     return profile;
   }
   async getStudentProfile(userId: string): Promise<StudentProfile> {
